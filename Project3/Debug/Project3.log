@@ -1,0 +1,12 @@
+﻿  Final.cpp
+D:\computadora\Compu Gráfica\Proyecto_Final\Project3\Project3\include\shader_m.h(44,40): warning C4101: 'e': variable local sin referencia
+D:\computadora\Compu Gráfica\Proyecto_Final\Project3\Project3\include\modelAnim.h(104,44): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+D:\computadora\Compu Gráfica\Proyecto_Final\Project3\Project3\include\modelAnim.h(520,24): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+D:\computadora\Compu Gráfica\Proyecto_Final\Project3\Project3\Final.cpp(448,11): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+D:\computadora\Compu Gráfica\Proyecto_Final\Project3\Project3\Final.cpp(449,11): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+D:\computadora\Compu Gráfica\Proyecto_Final\Project3\Project3\Final.cpp(453,16): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+D:\computadora\Compu Gráfica\Proyecto_Final\Project3\Project3\Final.cpp(454,16): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+D:\computadora\Compu Gráfica\Proyecto_Final\Project3\Project3\Final.cpp(456,10): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+D:\computadora\Compu Gráfica\Proyecto_Final\Project3\Project3\Final.cpp(457,10): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+D:\computadora\Compu Gráfica\Proyecto_Final\Project3\Project3\Final.cpp(465,28): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+  Project3.vcxproj -> D:\computadora\Compu Gráfica\Proyecto_Final\Project3\Debug\Project3.exe

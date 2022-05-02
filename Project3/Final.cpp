@@ -230,6 +230,7 @@ int main()
 	// load models
 	// -----------
 	Model piso("resources/objects/piso/piso.obj");
+	Model Silla("resources/objects/Silla/old_table.obj");
 	
 	//Inicialización de KeyFrames
 	for (int i = 0; i < MAX_FRAMES; i++)
@@ -329,6 +330,14 @@ int main()
 		model = glm::scale(model, glm::vec3(0.2f));
 		staticShader.setMat4("model", model);
 		piso.Draw(staticShader);
+
+		//DinoParque
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-250.0f, 0.0f, -400.0f));//Colocando Silla
+		model = glm::scale(model, glm::vec3(3.5f));
+		staticShader.setMat4("model", model);
+		Silla.Draw(staticShader);
+
+		
 
 		
 		// -------------------------------------------------------------------------------------------------------------------------

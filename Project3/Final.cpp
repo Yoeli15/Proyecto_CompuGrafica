@@ -1,8 +1,7 @@
 ﻿/*---------------------------------------------------------*/
-/* ----------------  Práctica                   -----------*/
+/* ----------------  Proyecto Final -----------------------*/
 /*-----------------    2022-2   ---------------------------*/
-/*------------- Alumno: Díaz Ramírez Yoeli  ---------------*/
-/*------------- No. Cuenta: 314116842       ---------------*/
+
 #include <Windows.h>
 
 #include <glad/glad.h>
@@ -44,8 +43,8 @@ GLFWmonitor *monitors;
 void getResolution(void);
 
 // camera
-Camera camera(glm::vec3(0.0f, 10.0f, 90.0f)); //(0.0f, 10.0f, 90.0f)); ORIGINAL
-float MovementSpeed = 0.1f;		      //(0.0f, 100.0f, -1000.0f) VOLCAN
+Camera camera(glm::vec3(0.0f, 10.0f, 90.0f));
+float MovementSpeed = 0.1f;
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -175,7 +174,7 @@ int main()
 	monitors = glfwGetPrimaryMonitor();
 	getResolution();
 
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Proyecto Final, CGeIHC", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "CGeIHC", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -229,13 +228,10 @@ int main()
 
 	// load models
 	// -----------
-	Model piso("resources/objects/piso/piso.obj");
-	Model Silla("resources/objects/Silla/old_table.obj");
+	//Model piso("resources/objects/piso/piso.obj");
 	Model isla("resources/objects/Isla/islaTrex.obj");
-	Model volcan("resources/objects/Volcan/volcan.obj");
-	
-	ModelAnim trex("resources/objects/Dinos/TrexAnimation.fbx");
-	trex.initShaders(animShader.ID);
+	Model Silla("resources/objects/Silla/old_table.obj");
+	//Model Estatua("resources/objects/DinoParque/Dinosaurio/Stegosaurus.obj");
 	
 	//Inicialización de KeyFrames
 	for (int i = 0; i < MAX_FRAMES; i++)
@@ -322,12 +318,6 @@ int main()
 		animShader.setVec3("light.direction", lightDirection);
 		animShader.setVec3("viewPos", camera.Position);
 
-		//Dinosaurios
-
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(-40.3f, 0.0f, 0.3f)); 
-		model = glm::scale(model, glm::vec3(0.15f));	
-		animShader.setMat4("model", model);
-		trex.Draw(animShader);
 		
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Escenario
@@ -337,26 +327,22 @@ int main()
 		staticShader.setMat4("view", view);
 
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.2f));
-		staticShader.setMat4("model", model);
-		piso.Draw(staticShader);
-		
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -100.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(30.0f));
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(5.0f));
 		staticShader.setMat4("model", model);
 		isla.Draw(staticShader);
-
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(900.0f, -5.6f, -990.0f));
-		model = glm::scale(model, glm::vec3(3.0f));
-		staticShader.setMat4("model", model);
-		volcan.Draw(staticShader);
 
 		//DinoParque
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(-250.0f, 0.0f, -400.0f));//Colocando Silla
 		model = glm::scale(model, glm::vec3(3.5f));
 		staticShader.setMat4("model", model);
 		Silla.Draw(staticShader);
+		/*
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-150.0f, 0.0f, -100.0f));//Colocando Dinosaurio
+		model = glm::scale(model, glm::vec3(0.5f));
+		staticShader.setMat4("model", model);
+		Estatua.Draw(staticShader);
+		*/
 		
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Caja Transparente --- Siguiente Práctica
@@ -405,13 +391,13 @@ void my_input(GLFWwindow *window, int key, int scancode, int action, int mode)
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.ProcessKeyboard(FORWARD, (float)deltaTime+32);
+		camera.ProcessKeyboard(FORWARD, (float)deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.ProcessKeyboard(BACKWARD, (float)deltaTime+32);
+		camera.ProcessKeyboard(BACKWARD, (float)deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.ProcessKeyboard(LEFT, (float)deltaTime+32);
+		camera.ProcessKeyboard(LEFT, (float)deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.ProcessKeyboard(RIGHT, (float)deltaTime+32);
+		camera.ProcessKeyboard(RIGHT, (float)deltaTime);
 	//To Configure Model
 	if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
 		posZ++;

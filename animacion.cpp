@@ -396,7 +396,7 @@ int main()
 
 	// load models
 	// -----------
-	Model balacaza("resources/objects/balacaza/balacaza.obj");
+	
 	Model piso("resources/objects/piso/piso.obj");
 	Model botaDer("resources/objects/Personaje/bota.obj");
 	Model piernaDer("resources/objects/Personaje/piernader.obj");
@@ -470,9 +470,9 @@ int main()
 		staticShader.setFloat("pointLight[0].quadratic", 0.00032f);
 
 		staticShader.setVec3("pointLight[1].position", glm::vec3(-80.0, 0.0f, 0.0f));
-		staticShader.setVec3("pointLight[1].ambient", colorSol);
-		staticShader.setVec3("pointLight[1].diffuse", colorSol);
-		staticShader.setVec3("pointLight[1].specular", colorSol);
+		staticShader.setVec3("pointLight[1].ambient", glm::vec3(0.0f, 0.0f, 0.0f)); //colorSol);
+		staticShader.setVec3("pointLight[1].diffuse", glm::vec3(0.0f, 0.0f, 0.0f)); //colorSol);
+		staticShader.setVec3("pointLight[1].specular", glm::vec3(0.0f, 0.0f, 0.0f)); //colorSol);
 		staticShader.setFloat("pointLight[1].constant", 0.00004f);
 		staticShader.setFloat("pointLight[1].linear", 0.009f);
 		staticShader.setFloat("pointLight[1].quadratic", 0.00032f);
@@ -518,27 +518,6 @@ int main()
 		animShader.setVec3("light.direction", lightDirection);
 		animShader.setVec3("viewPos", camera.Position);
 
-		/*model = glm::translate(glm::mat4(1.0f), glm::vec3(-40.3f, 1.75f, 0.3f)); // translate it down so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(1.2f));	// it's a bit too big for our scene, so scale it down
-		model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		animShader.setMat4("model", model);
-		animacionPersonaje.Draw(animShader);*/
-
-		/*model = glm::translate(glm::mat4(1.0f), glm::vec3(80.0f, 0.0f, 50.0f));
-		model = glm::scale(model, glm::vec3(0.1f));
-		animShader.setMat4("model", model);
-		espada.Draw(animShader);*/
-
-		// -------------------------------------------------------------------------------------------------------------------------
-		// Segundo Personaje Animacion
-		// -------------------------------------------------------------------------------------------------------------------------
-
-		/*model = glm::translate(glm::mat4(1.0f), glm::vec3(40.3f, 1.75f, 0.3f)); // translate it down so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(0.5f));	// it's a bit too big for our scene, so scale it down
-		model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		animShader.setMat4("model", model);
-		ninja.Draw(animShader);*/
-
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Escenario
 		// -------------------------------------------------------------------------------------------------------------------------
@@ -546,15 +525,6 @@ int main()
 		staticShader.setMat4("projection", projection);
 		staticShader.setMat4("view", view);
 
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(-150.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(1.5f));
-		staticShader.setMat4("model", model);
-		balacaza.Draw(staticShader);
-
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(250.0f, 0.0f, -10.0f));
-		model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		staticShader.setMat4("model", model);
-		casaDoll.Draw(staticShader);
 
 		model = glm::mat4(1.0f);
 		model = glm::translate(model, glm::vec3(0.0f, -1.75f, 0.0f));
@@ -562,98 +532,14 @@ int main()
 		staticShader.setMat4("model", model);
 		piso.Draw(staticShader);
 
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -70.0f));
-		model = glm::scale(model, glm::vec3(5.0f));
-		staticShader.setMat4("model", model);
-		casaVieja.Draw(staticShader);
-
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Carro
 		// -------------------------------------------------------------------------------------------------------------------------
-		model = glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::translate(model, glm::vec3(15.0f + movAuto_x, -1.0f, movAuto_z));
-		tmp = model = glm::rotate(model, glm::radians(rotAuto_y+90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
-		staticShader.setMat4("model", model);
-		carro.Draw(staticShader);
-
-		model = glm::translate(tmp, glm::vec3(8.5f, 2.5f, 12.9f));
-		model = glm::rotate(model, glm::radians(giroLlantas), glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
-		staticShader.setMat4("model", model);
-		llanta.Draw(staticShader);	//Izq delantera
-
-		model = glm::translate(tmp, glm::vec3(-8.5f, 2.5f, 12.9f));
-		model = glm::rotate(model, glm::radians(giroLlantas), glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
-		model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		staticShader.setMat4("model", model);
-		llanta.Draw(staticShader);	//Der delantera
-
-		model = glm::translate(tmp, glm::vec3(-8.5f, 2.5f, -14.5f));
-		model = glm::rotate(model, glm::radians(giroLlantas), glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
-		model = glm::rotate(model, glm::radians(180.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		staticShader.setMat4("model", model);
-		llanta.Draw(staticShader);	//Der trasera
-
-		model = glm::translate(tmp, glm::vec3(8.5f, 2.5f, -14.5f));
-		model = glm::rotate(model, glm::radians(giroLlantas), glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.1f, 0.1f, 0.1f));
-		staticShader.setMat4("model", model);
-		llanta.Draw(staticShader);	//Izq trase
+		
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Personaje
 		// -------------------------------------------------------------------------------------------------------------------------
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
-		model = glm::translate(model, glm::vec3(posX, posY, posZ));
-		tmp = model = glm::rotate(model, glm::radians(giroMonito), glm::vec3(0.0f, 1.0f, 0.0));
-		staticShader.setMat4("model", model);
-		torso.Draw(staticShader);
-
-		//Pierna Der
-		model = glm::translate(tmp, glm::vec3(-0.5f, 0.0f, -0.1f));
-		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0));
-		model = glm::rotate(model, glm::radians(-rotRodIzq), glm::vec3(1.0f, 0.0f, 0.0f));
-		staticShader.setMat4("model", model);
-		piernaDer.Draw(staticShader);
-
-		//Pie Der
-		model = glm::translate(model, glm::vec3(0, -0.9f, -0.2f));
-		staticShader.setMat4("model", model);
-		botaDer.Draw(staticShader);
-
-		//Pierna Izq
-		model = glm::translate(tmp, glm::vec3(0.5f, 0.0f, -0.1f));
-		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		staticShader.setMat4("model", model);
-		piernaIzq.Draw(staticShader);
-
-		//Pie Iz
-		model = glm::translate(model, glm::vec3(0, -0.9f, -0.2f));
-		staticShader.setMat4("model", model);
-		botaDer.Draw(staticShader);	//Izq trase
-
-		//Brazo derecho
-		model = glm::translate(tmp, glm::vec3(0.0f, -1.0f, 0.0f));
-		model = glm::translate(model, glm::vec3(-0.75f, 2.5f, 0));
-		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		staticShader.setMat4("model", model);
-		brazoDer.Draw(staticShader);
-
-		//Brazo izquierdo
-		model = glm::translate(tmp, glm::vec3(0.0f, -1.0f, 0.0f));
-		model = glm::translate(model, glm::vec3(0.75f, 2.5f, 0));
-		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		staticShader.setMat4("model", model);
-		brazoIzq.Draw(staticShader);
-
-		//Cabeza
-		model = glm::translate(tmp, glm::vec3(0.0f, -1.0f, 0.0f));
-		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0));
-		model = glm::translate(model, glm::vec3(0.0f, 2.5f, 0));
-		staticShader.setMat4("model", model);
-		cabeza.Draw(staticShader);
+		
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Caja Transparente --- Siguiente Práctica
 		// -------------------------------------------------------------------------------------------------------------------------

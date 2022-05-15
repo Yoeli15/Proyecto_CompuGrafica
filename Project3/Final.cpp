@@ -308,7 +308,7 @@ int main()
 	Model Kiosko("resources/objects/Kiosko/Prueba.obj");
 	Model Mesa("resources/objects/Mesa/Mesa.obj");
 	Model Resbaladilla("resources/objects/Resbaladilla/Resbaladilla.obj");
-	Model Dinosaurio("resources/objects/Dinosaurios/Triceratop/TriceratopMejora.obj");
+	Model Dinosaurio("resources/objects/Dinos/Triceratop/TriceratopMejora.obj");
 	Model Helados("resources/objects/CarroHelados/carrito_helado.obj");
 	Model Basura("resources/objects/BotesBasura/Basura.obj");
 	Model BasuraIn("resources/objects/BotesBasura/BasuraIn.obj");

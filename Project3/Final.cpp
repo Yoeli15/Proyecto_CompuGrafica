@@ -80,6 +80,24 @@ float	posX = 0.0f,
 		rot1 = 0.0f,
 		rot2 = -90.0f;
 
+//Este enum sirve para identificar en el arreglo de floats los parámetros del velociraptor;
+enum RaptorParams
+{
+	RaptorPistaRadio,
+	RaptorPistaAngulo,
+	RaptorRotCuerpoY,
+	RaptorRotCabezaX,
+	RaptorRotCabezaY,
+	RaptorRotMandibula,
+	RaptorRotBrazos,
+	RaptorRotPatas,
+	RaptorRotColaX,
+	RaptorRotColaY,
+	RaptorMaxParams
+};
+float RaptorParam[RaptorMaxParams] = {	0.0f};
+//Este arreglo sirve para poder alterar los valores de incrementos.
+float RaptorParamInc[RaptorMaxParams] = { 0.0f };
 #define MAX_FRAMES 9
 int i_max_steps = 60;
 int i_curr_steps = 0;
@@ -91,11 +109,13 @@ typedef struct _frame
 	float posZ;		//Variable para PosicionZ
 	float rotRodIzq;
 	float giroMonito;
+	float RaptorKFParams[RaptorMaxParams];
 
 }FRAME;
 
 FRAME KeyFrame[MAX_FRAMES];
-int FrameIndex = 0;			//introducir datos
+
+int FrameIndex = 3;			//introducir datos
 bool play = false;
 int playIndex = 0;
 
@@ -107,7 +127,12 @@ void saveFrame(void)
 	KeyFrame[FrameIndex].posX = posX;
 	KeyFrame[FrameIndex].posY = posY;
 	KeyFrame[FrameIndex].posZ = posZ;
-
+	for (size_t i = 0; i < RaptorMaxParams; i++)
+	{
+		KeyFrame[FrameIndex].RaptorKFParams[i] = RaptorParam[i];
+		std::cout << " RP[" << i<<"] "<< RaptorParam[i];
+	}
+	std::cout << std::endl;
 	FrameIndex++;
 }
 
@@ -116,6 +141,12 @@ void resetElements(void)
 	posX = KeyFrame[0].posX;
 	posY = KeyFrame[0].posY;
 	posZ = KeyFrame[0].posZ;
+
+	for (size_t i = 2; i < RaptorMaxParams; i++)
+	{
+		RaptorParam[i] = KeyFrame[0].RaptorKFParams[i];
+
+	}
 }
 
 void interpolation(void)
@@ -123,6 +154,11 @@ void interpolation(void)
 	incX = (KeyFrame[playIndex + 1].posX - KeyFrame[playIndex].posX) / i_max_steps;
 	incY = (KeyFrame[playIndex + 1].posY - KeyFrame[playIndex].posY) / i_max_steps;
 	incZ = (KeyFrame[playIndex + 1].posZ - KeyFrame[playIndex].posZ) / i_max_steps;
+	for (size_t i = 0; i < RaptorMaxParams; i++)
+	{
+		RaptorParamInc[i] = (KeyFrame[playIndex + 1].RaptorKFParams[i] - KeyFrame[playIndex].RaptorKFParams[i]) / i_max_steps;
+
+	}
 }
 
 void animate(void)
@@ -137,14 +173,13 @@ void animate(void)
 				std::cout << "Animation ended" << std::endl;
 				//printf("termina anim\n");
 				playIndex = 0;
-				play = false;
+				resetElements();
+				//play = false;
 			}
-			else //Next frame interpolations
-			{
-				i_curr_steps = 0; //Reset counter
-								  //Interpolation
-				interpolation();
-			}
+			i_curr_steps = 0; //Reset counter
+							  //Interpolation
+			interpolation();
+			
 		}
 		else
 		{
@@ -152,6 +187,12 @@ void animate(void)
 			posX += incX;
 			posY += incY;
 			posZ += incZ;
+			RaptorParam[RaptorPistaAngulo]+=0.1;
+			for (size_t i = 0; i < RaptorMaxParams; i++)
+			{
+				RaptorParam[i] += RaptorParamInc[i];
+			}
+
 
 			i_curr_steps++;
 		}
@@ -225,6 +266,51 @@ void getResolution()
 
 int main()
 {
+	KeyFrame[0].RaptorKFParams[0] = 0.0f;
+	KeyFrame[0].RaptorKFParams[1] = 0.0f;
+	KeyFrame[0].RaptorKFParams[2] = -15.0f;
+	KeyFrame[0].RaptorKFParams[3] = 0.0f;
+	KeyFrame[0].RaptorKFParams[4] = 18.0f;
+	KeyFrame[0].RaptorKFParams[5] = -24.0f;
+	KeyFrame[0].RaptorKFParams[6] = -38.0f;
+	KeyFrame[0].RaptorKFParams[7] = -48.0f;
+	KeyFrame[0].RaptorKFParams[8] = 0.0f;
+	KeyFrame[0].RaptorKFParams[9] = 30.0f;
+	//{ 0.0f, 0.0f, 15.0f, 0.0f, 18.0f, -24.0f, - 38.0f, -48.0f, 0.0f , 30.0f };
+	KeyFrame[1].RaptorKFParams[0] = 0.0f;
+	KeyFrame[1].RaptorKFParams[1] = 0.0f;
+	KeyFrame[1].RaptorKFParams[2] = 12.0f;
+	KeyFrame[1].RaptorKFParams[3] = 0.0f;
+	KeyFrame[1].RaptorKFParams[4] = -4.0f;
+	KeyFrame[1].RaptorKFParams[5] = -6.0f;
+	KeyFrame[1].RaptorKFParams[6] = 42.0f;
+	KeyFrame[1].RaptorKFParams[7] = 49.0f;
+	KeyFrame[1].RaptorKFParams[8] = 0.0f;
+	KeyFrame[1].RaptorKFParams[9] = -12.0f;
+	//{ 0.0f, 0.0f, 15.0f, 0.0f, 18.0f, -24.0f, - 38.0f, -48.0f, 0.0f , 30.0f };
+	KeyFrame[2].RaptorKFParams[0] = 0.0f;
+	KeyFrame[2].RaptorKFParams[1] = 0.0f;
+	KeyFrame[2].RaptorKFParams[2] = -15.0f;
+	KeyFrame[2].RaptorKFParams[3] = 0.0f;
+	KeyFrame[2].RaptorKFParams[4] = 18.0f;
+	KeyFrame[2].RaptorKFParams[5] = -24.0f;
+	KeyFrame[2].RaptorKFParams[6] = -38.0f;
+	KeyFrame[2].RaptorKFParams[7] = -48.0f;
+	KeyFrame[2].RaptorKFParams[8] = 0.0f;
+	KeyFrame[2].RaptorKFParams[9] = 30.0f;
+	//{ 0.0f, 0.0f, 15.0f, 0.0f, 18.0f, -24.0f, - 38.0f, -48.0f, 0.0f , 30.0f };
+	KeyFrame[3].RaptorKFParams[0] = 0.0f;
+	KeyFrame[3].RaptorKFParams[1] = 0.0f;
+	KeyFrame[3].RaptorKFParams[2] = 12.0f;
+	KeyFrame[3].RaptorKFParams[3] = 0.0f;
+	KeyFrame[3].RaptorKFParams[4] = -4.0f;
+	KeyFrame[3].RaptorKFParams[5] = -6.0f;
+	KeyFrame[3].RaptorKFParams[6] = 42.0f;
+	KeyFrame[3].RaptorKFParams[7] = 49.0f;
+	KeyFrame[3].RaptorKFParams[8] = 0.0f;
+	KeyFrame[3].RaptorKFParams[9] = -12.0f;
+	//{ 0.0f, 0.0f, 15.0f, 0.0f, 18.0f, -24.0f, - 38.0f, -48.0f, 0.0f , 30.0f };
+	
 	// glfw: initialize and configure
 	// ------------------------------
 	glfwInit();
@@ -297,7 +383,9 @@ int main()
 	// load models
 	// -----------
 	//Model piso("resources/objects/piso/piso.obj");
+	
 	Model isla("resources/objects/Isla/isla.obj");
+	
 	Model Banco1("resources/objects/Bancos/Banco1/old_table.obj");
 	Model Banco4("resources/objects/Bancos/Banco4/Banco4.obj");
 	Model Arbol1("resources/objects/Arboles/Arbol1.obj");
@@ -308,7 +396,7 @@ int main()
 	Model Kiosko("resources/objects/Kiosko/Prueba.obj");
 	Model Mesa("resources/objects/Mesa/Mesa.obj");
 	Model Resbaladilla("resources/objects/Resbaladilla/Resbaladilla.obj");
-	Model Dinosaurio("resources/objects/Dinos/Triceratop/TriceratopMejora.obj");
+	Model Dinosaurio("resources/objects/Dinosaurios/Triceratop/TriceratopMejora.obj");
 	Model Helados("resources/objects/CarroHelados/carrito_helado.obj");
 	Model Basura("resources/objects/BotesBasura/Basura.obj");
 	Model BasuraIn("resources/objects/BotesBasura/BasuraIn.obj");
@@ -316,7 +404,26 @@ int main()
 	Model Maquina("resources/objects/Maquinas/Maquina.obj");
 	Model Pasamanos("resources/objects/Pasamanos/Prueba.obj");
 	Model SubeBaja("resources/objects/SubeBaja/SubeBaja.obj");
-	Model Barco("resources/objects/Barco/Mejora.obj");
+
+	Model Casa1("resources/objects/Casas/Casa1/3d-model.obj");
+	Model CasaF("resources/objects/Casas/Casaf/3d-model.obj");
+	Model CasaAzul("resources/objects/Casas/CasaAzul/3d-model.obj");
+	
+	Model cubo("resources/objects/cubo.obj");
+	
+	Model Silla("resources/objects/Silla/old_table.obj");
+	Model Curva("resources/ObjectsRodrigo/Caminos/Curva.obj");
+	Model RaptorCuerpo("resources/ObjectsRodrigo/Raptor/Cuerpo.obj");
+	Model RaptorCola("resources/ObjectsRodrigo/Raptor/Cola.obj");
+	Model RaptorCabeza("resources/ObjectsRodrigo/Raptor/Cabeza.obj");
+	Model RaptorMandibula("resources/ObjectsRodrigo/Raptor/Mandibula.obj");
+	Model RaptorBrazoIzq("resources/ObjectsRodrigo/Raptor/BrazoIzq.obj");
+	Model RaptorBrazoDer("resources/ObjectsRodrigo/Raptor/BrazoDer.obj");
+	Model RaptorPataIzq("resources/ObjectsRodrigo/Raptor/PataIzq.obj");
+	Model RaptorPataDer("resources/ObjectsRodrigo/Raptor/PataDer.obj");
+	
+	//Model Estatua("resources/objects/DinoParque/Dinosaurio/Stegosaurus.obj");
+	Model Barco("resources/objects/Barco/Barco.obj");
 	Model Puerto("resources/objects/Puerto/Prueba2.obj");
 	
 	//Inicialización de KeyFrames
@@ -419,7 +526,6 @@ int main()
 		isla.Draw(staticShader);
 
 		//DINOPARQUE
-
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(500.0f, -0.5f, -1170.0f));//Colocando Cerca
 		model = glm::rotate(model, glm::radians(rot1+70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(5.5f));
@@ -429,6 +535,10 @@ int main()
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(475.0f, -0.5f, -1100.0f));//Colocando Cerca
 		model = glm::rotate(model, glm::radians(rot1+70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(5.5f));
+
+		
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-150.0f, 0.0f, -100.0f));//Colocando Dinosaurio
+		model = glm::scale(model, glm::vec3(0.5f));
 		staticShader.setMat4("model", model);
 		Cerca.Draw(staticShader);
 
@@ -514,7 +624,7 @@ int main()
 		Mesa.Draw(staticShader);
 
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(700.0f, 0.0f, -1050.0f));//Colocando Arbol
-		model = glm::scale(model, glm::vec3(0.02f));
+		model = glm::scale(model, glm::vec3(20.0f));
 		staticShader.setMat4("model", model);
 		Arbol1.Draw(staticShader);
 
@@ -536,7 +646,7 @@ int main()
 		Maquina.Draw(staticShader);
 
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(700.0f, 0.0f, -760.0f));//Colocando Arbol
-		model = glm::scale(model, glm::vec3(0.02f));
+		model = glm::scale(model, glm::vec3(20.00f));
 		staticShader.setMat4("model", model);
 		Arbol2.Draw(staticShader);
 
@@ -675,10 +785,91 @@ int main()
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(150.0f+movBarco_x, -12.0f, 1490.0f + movBarco_z));//Colocando Barco
 		model = glm::rotate(model, glm::radians(rot1 + 60 + orienta), glm::vec3(0.0f, 1.0f, 0.0f));
 		//tmp = model = glm::rotate(model, glm::radians(orienta+90), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.3f));
+		model = glm::scale(model, glm::vec3(100.0f));
 		staticShader.setMat4("model", model);
 		Barco.Draw(staticShader);
 		
+
+		/*----------------------------------------------------------------------------------
+		------------------------------------------------------------------------------------
+		---------CREANDO PISTA DE CARRERAS DE VELOCIRAPTORS---------------------------------
+		------------------------------------------------------------------------------------
+		----------------------------------------------------------------------------------*/
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.00f, 0.1f, 10.0f));
+		model = glm::scale(model, glm::vec3(2.0f));
+		staticShader.setMat4("model", model);
+		Curva.Draw(staticShader);
+		
+		model = glm::rotate(model, glm::radians(RaptorParam[RaptorPistaAngulo]), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(-64.5f+RaptorParam[RaptorPistaRadio], 0.2f, 0.0f));
+		model = glm::scale(model, glm::vec3(3.0f));
+		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotCuerpoY]),glm::vec3(0.0f,1.0f,0.0f));
+		tmp = model;		
+		staticShader.setMat4("model", model);
+		RaptorCuerpo.Draw(staticShader);
+
+		model = glm::translate(tmp, glm::vec3(0.00f, 1.42f, 0.640f));
+		
+		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotCabezaX]), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotCabezaY]), glm::vec3(0.0f, 1.0f, 0.0f));
+		staticShader.setMat4("model", model);
+		RaptorCabeza.Draw(staticShader);
+
+		model = glm::translate(model, glm::vec3(0.00f, 00.0f,0.190f ));
+		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotMandibula]+30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		staticShader.setMat4("model", model);
+		RaptorMandibula.Draw(staticShader);
+
+
+		model = glm::translate(tmp, glm::vec3(0.050f, 1.0f, 0.50f));
+		model = glm::rotate(model, glm::radians(-RaptorParam[RaptorRotBrazos]), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f));
+		staticShader.setMat4("model", model);
+		RaptorBrazoIzq.Draw(staticShader);
+
+		model = glm::translate(tmp, glm::vec3(-0.05f, 1.0f , 0.5f));
+		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotBrazos]), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f));
+		staticShader.setMat4("model", model);
+		RaptorBrazoDer.Draw(staticShader);
+
+		model = glm::translate(tmp, glm::vec3(0.065f, 1.0f, 0.160f));
+		model = glm::rotate(model, glm::radians(-RaptorParam[RaptorRotPatas]), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f));
+		staticShader.setMat4("model", model);
+		RaptorPataIzq.Draw(staticShader);
+
+		model = glm::translate(tmp, glm::vec3(-0.065f,  1.0f, 0.160f));
+		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotPatas]), glm::vec3(1.0f, 0.0f, 0.0f));
+		staticShader.setMat4("model", model);
+		RaptorPataDer.Draw(staticShader);
+
+
+		model = glm::translate(tmp, glm::vec3(0.00f, 1.0f, -0.420f));
+		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotColaX]), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotColaY]), glm::vec3(0.0f, 1.0f, 0.0f));
+		staticShader.setMat4("model", model);
+		RaptorCola.Draw(staticShader);
+
+		//ZONA RESIDENCIAL
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(850.0f, 0.0f, -800.0f));//Colocando 
+		model = glm::rotate(model, glm::radians(rot1 - 60), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.1f));
+		staticShader.setMat4("model", model);
+		Casa1.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(150.0f, 0.0f, -967.5f));//Colocando 
+		model = glm::rotate(model, glm::radians(rot1 + 60.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.4f));
+		staticShader.setMat4("model", model);
+		CasaF.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(650.0f, 0.0f, -300.0f));
+		model = glm::rotate(model, glm::radians(rot1), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.1f));
+		staticShader.setMat4("model", model);
+		CasaAzul.Draw(staticShader);
+
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Termina Escenario
 		// -------------------------------------------------------------------------------------------------------------------------
@@ -723,19 +914,39 @@ void my_input(GLFWwindow *window, int key, int scancode, int action, int mode)
 		camera.ProcessKeyboard(LEFT, (float)deltaTime);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 		camera.ProcessKeyboard(RIGHT, (float)deltaTime);
-	//To Configure Model
-	if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
-		posZ++;
+	//Configuración para hacer los keyframes
+	/*if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
+		RaptorParam[RaptorRotCuerpoY]++;
 	if (glfwGetKey(window, GLFW_KEY_H) == GLFW_PRESS)
-		posZ--;
-	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
-		posX--;
-	if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
-		posX++;
-	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
-		lightPosition.x++;
+		RaptorParam[RaptorRotCuerpoY]--;
 	if (glfwGetKey(window, GLFW_KEY_N) == GLFW_PRESS)
-		lightPosition.x--;
+		RaptorParam[RaptorRotCabezaX]++;
+	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS)
+		RaptorParam[RaptorRotCabezaX]--;
+	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+		RaptorParam[RaptorRotCabezaY]++;
+	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS)
+		RaptorParam[RaptorRotCabezaY]--;
+	if (glfwGetKey(window, GLFW_KEY_V) == GLFW_PRESS)
+		RaptorParam[RaptorRotMandibula]++;
+	if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS)
+		RaptorParam[RaptorRotMandibula]--;
+	if (glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
+		RaptorParam[RaptorRotBrazos]++;
+	if (glfwGetKey(window, GLFW_KEY_G) == GLFW_PRESS)
+		RaptorParam[RaptorRotBrazos]--;
+	if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS)
+		RaptorParam[RaptorRotPatas]++;
+	if (glfwGetKey(window, GLFW_KEY_J) == GLFW_PRESS)
+		RaptorParam[RaptorRotPatas]--;
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
+		RaptorParam[RaptorRotColaY]--;
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
+		RaptorParam[RaptorRotColaY]++;
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
+		RaptorParam[RaptorRotColaX]++;
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
+		RaptorParam[RaptorRotColaX]--;*/
 
 	//To play KeyFrame animation 
 	if (key == GLFW_KEY_P && action == GLFW_PRESS)
@@ -759,13 +970,14 @@ void my_input(GLFWwindow *window, int key, int scancode, int action, int mode)
 	}
 
 	//To Save a KeyFrame
-	if (key == GLFW_KEY_L && action == GLFW_PRESS)
+	/*if (key == GLFW_KEY_L && action == GLFW_PRESS)
 	{
 		if (FrameIndex < MAX_FRAMES)
 		{
 			saveFrame();
 		}
-	}
+	}*/
+	
 
 	//Animación Barco
 	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {

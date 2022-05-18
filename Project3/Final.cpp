@@ -382,8 +382,6 @@ int main()
 
 	// load models
 	// -----------
-	//Model piso("resources/objects/piso/piso.obj");
-	
 	Model isla("resources/objects/Isla/isla.obj");
 	
 	Model Banco1("resources/objects/Bancos/Banco1/old_table.obj");
@@ -405,13 +403,6 @@ int main()
 	Model Pasamanos("resources/objects/Pasamanos/Prueba.obj");
 	Model SubeBaja("resources/objects/SubeBaja/SubeBaja.obj");
 
-	Model Casa1("resources/objects/Casas/Casa1/3d-model.obj");
-	Model CasaF("resources/objects/Casas/Casaf/3d-model.obj");
-	Model CasaAzul("resources/objects/Casas/CasaAzul/3d-model.obj");
-	
-	Model cubo("resources/objects/cubo.obj");
-	
-	Model Silla("resources/objects/Silla/old_table.obj");
 	Model Curva("resources/ObjectsRodrigo/Caminos/Curva.obj");
 	Model RaptorCuerpo("resources/ObjectsRodrigo/Raptor/Cuerpo.obj");
 	Model RaptorCola("resources/ObjectsRodrigo/Raptor/Cola.obj");
@@ -422,7 +413,6 @@ int main()
 	Model RaptorPataIzq("resources/ObjectsRodrigo/Raptor/PataIzq.obj");
 	Model RaptorPataDer("resources/ObjectsRodrigo/Raptor/PataDer.obj");
 	
-	//Model Estatua("resources/objects/DinoParque/Dinosaurio/Stegosaurus.obj");
 	Model Barco("resources/objects/Barco/Barco.obj");
 	Model Puerto("resources/objects/Puerto/Prueba2.obj");
 	
@@ -535,12 +525,6 @@ int main()
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(475.0f, -0.5f, -1100.0f));//Colocando Cerca
 		model = glm::rotate(model, glm::radians(rot1+70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(5.5f));
-
-		
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(-150.0f, 0.0f, -100.0f));//Colocando Dinosaurio
-		model = glm::scale(model, glm::vec3(0.5f));
-		staticShader.setMat4("model", model);
-		Cerca.Draw(staticShader);
 
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(450.0f, -0.5f, -1030.0f));//Colocando Cerca
 		model = glm::rotate(model, glm::radians(rot1 + 70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -776,16 +760,21 @@ int main()
 		staticShader.setMat4("model", model);
 		Helados.Draw(staticShader);
 
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(20.0f, -12.0f, 1160.0f));//Colocando Puerto
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-83.0f, -12.0f, 1110.0f));//Colocando Puerto
 		model = glm::rotate(model, glm::radians(rot1 - 70), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(1.2f));
+		model = glm::scale(model, glm::vec3(1.4f));
 		staticShader.setMat4("model", model);
 		Puerto.Draw(staticShader);
 
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(150.0f+movBarco_x, -12.0f, 1490.0f + movBarco_z));//Colocando Barco
-		model = glm::rotate(model, glm::radians(rot1 + 60 + orienta), glm::vec3(0.0f, 1.0f, 0.0f));
-		//tmp = model = glm::rotate(model, glm::radians(orienta+90), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(100.0f));
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(45.0f, -12.0f, 1080.0f));//Colocando Puerto
+		model = glm::rotate(model, glm::radians(rot1 - 50), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.4f));
+		staticShader.setMat4("model", model);
+		Puerto.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(70.0f+movBarco_x, -30.0f, 1520.0f + movBarco_z));//Colocando Barco
+		model = glm::rotate(model, glm::radians(rot1 + 20 + orienta), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(80.0f));
 		staticShader.setMat4("model", model);
 		Barco.Draw(staticShader);
 		
@@ -852,23 +841,7 @@ int main()
 		RaptorCola.Draw(staticShader);
 
 		//ZONA RESIDENCIAL
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(850.0f, 0.0f, -800.0f));//Colocando 
-		model = glm::rotate(model, glm::radians(rot1 - 60), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.1f));
-		staticShader.setMat4("model", model);
-		Casa1.Draw(staticShader);
-
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(150.0f, 0.0f, -967.5f));//Colocando 
-		model = glm::rotate(model, glm::radians(rot1 + 60.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.4f));
-		staticShader.setMat4("model", model);
-		CasaF.Draw(staticShader);
-
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(650.0f, 0.0f, -300.0f));
-		model = glm::rotate(model, glm::radians(rot1), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.1f));
-		staticShader.setMat4("model", model);
-		CasaAzul.Draw(staticShader);
+		
 
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Termina Escenario

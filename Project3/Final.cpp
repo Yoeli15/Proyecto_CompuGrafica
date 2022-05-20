@@ -160,13 +160,10 @@ void animate(void)
 	//Barco
 	if(animacion){
 		switch (avanza) {
-			case 0:
+			case 0://Salida del puerto
 				if (movBarco_z <= 250.0f) {
 					movBarco_z += 2.0f;
 					movBarco_x += 1.0f;
-					//printf("\t M,%f", movBarco_z);
-					//orienta -= 0.02f;
-					//printf("\t O,%f", orienta);
 				}
 				else
 					avanza = 1;
@@ -174,14 +171,12 @@ void animate(void)
 			case 1:
 				if (movBarco_z < 360.0f) {
 					movBarco_z += 0.2f;
-					//printf("\t M,%f", movBarco_z);
 					orienta += 0.2f;
-					printf("\t O,%f", orienta);
 				}
 				else
 					avanza = 2;
 				break;
-			case 2:
+			case 2://Superior Izquierda
 				if (movBarco_x <= 900.0f){
 					orienta = 110.0f;
 					movBarco_x += 2.0f;
@@ -191,34 +186,109 @@ void animate(void)
 					avanza = 3;
 				break;
 			case 3:
-				if (movBarco_z >= -2900.0f){
-					orienta = 150.0f;
-					movBarco_z -= 3.0f;
+				if (movBarco_x < 930.0f) {
+					movBarco_x += 0.2f;
+					orienta += 0.2f;
 				}
 				else
 					avanza = 4;
 				break;
 
-			case 4:
-				if (movBarco_x >= -980.0f){
-					orienta = -130.0f;
-					movBarco_x -= 3.0f;
+			case 4://Lateral Izq
+				if (movBarco_z >= -1800.0f){
+					orienta = 150.0f;
+					movBarco_z -= 2.0f;
 				}
 				else
 					avanza = 5;
 				break;
+
 			case 5:
-				if (movBarco_z <= -100.0f) {
-					orienta = 0.0f;
-					movBarco_z += 3.0f;
+				if (movBarco_z >= -1860.0f) {
+					movBarco_z -= 0.2f;
+					orienta -= 0.2f;
 				}
 				else
 					avanza = 6;
 				break;
+
 			case 6:
-				if (movBarco_x <= 50) {
+				if (movBarco_z >= -2050.0f) {
+					orienta = 90.0f;
+					movBarco_z -= 1.0f;
+					movBarco_x += 2.0f;
+				}
+				else
+					avanza = 7;
+				break;
+
+			case 7:
+				if (movBarco_z >= -2110.0f) {
+					movBarco_z -= 0.2f;
+					orienta += 0.2f;
+				}
+				else
+					avanza = 8;
+				break;
+
+			case 8:
+				if (movBarco_z >= -2900.0f) {
+					orienta = 150.0f;
+					movBarco_z -= 2.0f;
+				}
+				else
+					avanza = 9;
+				break;
+
+			case 9:
+				if (movBarco_z >= -2980.0f) {
+					movBarco_z -= 0.2f;
+					orienta += 0.2f;
+				}
+				else
+					avanza = 10;
+				break;
+
+			case 10://Inferior
+				if (movBarco_x >= -800.0f){
+					orienta = -130.0f;
+					movBarco_x -= 2.0f;
+				}
+				else
+					avanza = 11;
+				break;
+
+			case 11:
+				if (movBarco_x >= -900.0f) {
+					movBarco_x -= 0.2f;
+					orienta += 0.2f;
+				}
+				else
+					avanza = 12;
+				break;
+
+			case 12://Lateral Derecha
+				if (movBarco_z <= -500.0f) {//checar este
+					orienta = -30.0f;
+					movBarco_z += 2.0f;
+				}
+				else
+					avanza = 13;
+				break;
+
+			case 13:
+				if (movBarco_z <= -280.0f) {
+					movBarco_z += 0.2f;
+					orienta += 0.2f;
+				}
+				else
+					avanza = 14;
+				break;
+
+			case 14://Superior Derecha
+				if (movBarco_x <= 150) {
 					orienta = 80.0f;
-					movBarco_x += 3.0f;
+					movBarco_x += 2.0f;
 				}
 				break;
 
@@ -333,7 +403,7 @@ int main()
 	Model Barco("resources/objects/Barco/Barco.obj");
 	Model Barquito("resources/objects/Barco/Barco_scout.obj");
 	Model Barquito2("resources/objects/Barco/Barco_speeder.obj");
-	Model Puerto("resources/objects/Puerto/Prueba2.obj");
+	//Model Puerto("resources/objects/Puerto/Prueba2.obj");
 	
 	//Inicialización de KeyFrames
 	for (int i = 0; i < MAX_FRAMES; i++)
@@ -681,12 +751,12 @@ int main()
 		model = glm::scale(model, glm::vec3(0.5f));
 		staticShader.setMat4("model", model);
 		Helados.Draw(staticShader);
-		*/
+		
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(-83.0f, -12.0f, 1110.0f));//Colocando Puerto
 		model = glm::rotate(model, glm::radians(rot1 - 70), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.4f));
 		staticShader.setMat4("model", model);
-		Puerto.Draw(staticShader);
+		Puerto.Draw(staticShader);*/
 
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(-137.0f, -6.0f, 1280.0f));//Colocando Barquito
 		model = glm::rotate(model, glm::radians(rot1 - 155), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -694,11 +764,11 @@ int main()
 		staticShader.setMat4("model", model);
 		Barquito.Draw(staticShader);
 
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(45.0f, -12.0f, 1080.0f));//Colocando Puerto
+		/*model = glm::translate(glm::mat4(1.0f), glm::vec3(45.0f, -12.0f, 1080.0f));//Colocando Puerto
 		model = glm::rotate(model, glm::radians(rot1 - 50), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.4f));
 		staticShader.setMat4("model", model);
-		Puerto.Draw(staticShader);
+		Puerto.Draw(staticShader);*/
 
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(250.0f, -6.0f, 1160.0f));//Colocando Barquito
 		model = glm::rotate(model, glm::radians(rot1 + 40), glm::vec3(0.0f, 1.0f, 0.0f));

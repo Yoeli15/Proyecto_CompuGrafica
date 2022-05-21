@@ -43,7 +43,7 @@ GLFWmonitor *monitors;
 void getResolution(void);
 
 // camera
-Camera camera(glm::vec3(0.0f, 10.0f, 90.0f));
+Camera camera(glm::vec3(0.0f, 50.0f, 90.0f));
 float MovementSpeed = 0.1f;
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
@@ -382,8 +382,8 @@ int main()
 
 	// load models
 	// -----------
-	Model isla("resources/objects/Isla/isla.obj");
-	
+	Model isla("resources/objects/Isla/islaTrex.obj");
+	Model agua("resources/objects/piso/Piso.obj");
 	Model Banco1("resources/objects/Bancos/Banco1/old_table.obj");
 	Model Banco4("resources/objects/Bancos/Banco4/Banco4.obj");
 	Model Arbol1("resources/objects/Arboles/Arbol1.obj");
@@ -412,6 +412,11 @@ int main()
 	Model RaptorBrazoDer("resources/ObjectsRodrigo/Raptor/BrazoDer.obj");
 	Model RaptorPataIzq("resources/ObjectsRodrigo/Raptor/PataIzq.obj");
 	Model RaptorPataDer("resources/ObjectsRodrigo/Raptor/PataDer.obj");
+
+	ModelAnim Aplauso1("resources/objects/Aplausos/Standing Clap.dae");
+	Aplauso1.initShaders(animShader.ID);
+	ModelAnim trex("resources/objects/Dinos/Trex/TrexAnimation.fbx");
+	trex.initShaders(animShader.ID);
 	
 	Model Barco("resources/objects/Barco/Barco.obj");
 	Model Puerto("resources/objects/Puerto/Prueba2.obj");
@@ -501,7 +506,20 @@ int main()
 		animShader.setVec3("light.direction", lightDirection);
 		animShader.setVec3("viewPos", camera.Position);
 
-		
+		// T-REX vec3(20.0f, 2.5f, 0.0f));
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(510.0f, 2.9f, -1060.0f)); // translate it down so it's at the center of the scene
+		model = glm::scale(model, glm::vec3(0.155f));	// it's a bit too big for our scene, so scale it down
+		animShader.setMat4("model", model);
+		trex.Draw(animShader);
+
+		// APLAUSOS1
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(537.5f, 0.0f, -1058.0f)); // translate it down so it's at the center of the scene
+		model = glm::scale(model, glm::vec3(0.15f));	// it's a bit too big for our scene, so scale it down
+		animShader.setMat4("model", model);
+		Aplauso1.Draw(animShader);
+
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Escenario
 		// -------------------------------------------------------------------------------------------------------------------------
@@ -510,10 +528,15 @@ int main()
 		staticShader.setMat4("view", view);
 
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
+		model = glm::translate(model, glm::vec3(0.0f, -62.0f, -100.0f));
 		model = glm::scale(model, glm::vec3(20.0f));
 		staticShader.setMat4("model", model);
 		isla.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -52.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(2.0f));
+		staticShader.setMat4("model", model);
+		agua.Draw(staticShader);
 
 		//DINOPARQUE
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(500.0f, -0.5f, -1170.0f));//Colocando Cerca
@@ -525,6 +548,7 @@ int main()
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(475.0f, -0.5f, -1100.0f));//Colocando Cerca
 		model = glm::rotate(model, glm::radians(rot1+70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(5.5f));
+		Cerca.Draw(staticShader);
 
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(450.0f, -0.5f, -1030.0f));//Colocando Cerca
 		model = glm::rotate(model, glm::radians(rot1 + 70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -784,7 +808,7 @@ int main()
 		---------CREANDO PISTA DE CARRERAS DE VELOCIRAPTORS---------------------------------
 		------------------------------------------------------------------------------------
 		----------------------------------------------------------------------------------*/
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.00f, 0.1f, 10.0f));
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 9.5f, 10.0f));
 		model = glm::scale(model, glm::vec3(2.0f));
 		staticShader.setMat4("model", model);
 		Curva.Draw(staticShader);

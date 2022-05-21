@@ -405,9 +405,7 @@ int main()
 	Model Pasamanos("resources/objects/Pasamanos/Prueba.obj");
 	Model SubeBaja("resources/objects/SubeBaja/SubeBaja.obj");
 
-	Model Casa1("resources/objects/Casas/Casa1/3d-model.obj");
-	Model CasaF("resources/objects/Casas/Casaf/3d-model.obj");
-	Model CasaAzul("resources/objects/Casas/CasaAzul/3d-model.obj");
+	
 	
 	Model cubo("resources/objects/cubo.obj");
 	
@@ -801,8 +799,8 @@ int main()
 		Curva.Draw(staticShader);
 		
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorPistaAngulo]), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::translate(model, glm::vec3(-64.5f+RaptorParam[RaptorPistaRadio], 0.2f, 0.0f));
-		model = glm::scale(model, glm::vec3(3.0f));
+		model = glm::translate(model, glm::vec3(-74.5f+RaptorParam[RaptorPistaRadio], 0.2f, 0.0f));
+		model = glm::scale(model, glm::vec3(7.0f));
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotCuerpoY]),glm::vec3(0.0f,1.0f,0.0f));
 		tmp = model;		
 		staticShader.setMat4("model", model);

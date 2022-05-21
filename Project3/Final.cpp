@@ -268,7 +268,7 @@ void animate(void)
 				break;
 
 			case 12://Lateral Derecha
-				if (movBarco_z <= -500.0f) {//checar este
+				if (movBarco_z <= -1500.0f) {
 					orienta = -30.0f;
 					movBarco_z += 2.0f;
 				}
@@ -277,21 +277,74 @@ void animate(void)
 				break;
 
 			case 13:
-				if (movBarco_z <= -280.0f) {
+				if (movBarco_z <= -1460.0f) {
 					movBarco_z += 0.2f;
-					orienta += 0.2f;
+					orienta -= 0.2f;
 				}
 				else
 					avanza = 14;
 				break;
 
-			case 14://Superior Derecha
-				if (movBarco_x <= 150) {
+			case 14:
+				if (movBarco_z <= -1380.0f) {
+					orienta = -80.0f;
+					movBarco_z += 1.0f;
+					movBarco_x -= 2.0f;
+				}
+				else
+					avanza = 15;
+				break;
+
+			case 15:
+				if (movBarco_z <= -1330.0f) {
+					movBarco_z += 0.2f;
+					orienta += 0.2f;
+				}
+				else
+					avanza = 16;
+				break;
+
+			case 16:
+				if (movBarco_z <= 0.0f) {
+					orienta = -20.0f;
+					movBarco_z += 2.0f;
+				}
+				else
+					avanza = 17;
+				break;
+
+			case 17:
+				if (movBarco_z <= 100.0f) {
+					movBarco_z += 0.2f;
+					orienta += 0.2f;
+				}
+				else
+					avanza = 18;
+				break;
+
+			case 18://Superior Derecha
+				if (movBarco_x <= -70.0f) {
 					orienta = 80.0f;
 					movBarco_x += 2.0f;
 				}
+				else
+					avanza = 19;
 				break;
-
+			
+			case 19:
+				if (movBarco_x <= 10.0f) {
+					movBarco_x += 0.2f;
+					orienta -= 0.2f;
+				}
+				else
+					avanza = 20;
+				break;
+			
+			case 20://Regresando al puerto
+				if (movBarco_z >= 10.0f) {
+					movBarco_z -= 2.0f;
+				}
+				break;
 			default:
 				break;
 		}
@@ -382,7 +435,7 @@ int main()
 	// -----------
 	Model isla("resources/objects/Isla/isla.obj");
 
-	/*Model Banco1("resources/objects/Bancos/Banco1/old_table.obj");
+	Model Banco1("resources/objects/Bancos/Banco1/old_table.obj");
 	Model Banco4("resources/objects/Bancos/Banco4/Banco4.obj");
 	Model Arbol1("resources/objects/Arboles/Arbol1.obj");
 	Model Arbol2("resources/objects/Arboles/Arbol2.obj");
@@ -399,11 +452,11 @@ int main()
 	Model Juego("resources/objects/Juego/Teeter03.obj");
 	Model Maquina("resources/objects/Maquinas/Maquina.obj");
 	Model Pasamanos("resources/objects/Pasamanos/Prueba.obj");
-	Model SubeBaja("resources/objects/SubeBaja/SubeBaja.obj");*/
+	Model SubeBaja("resources/objects/SubeBaja/SubeBaja.obj");
 	Model Barco("resources/objects/Barco/Barco.obj");
 	Model Barquito("resources/objects/Barco/Barco_scout.obj");
 	Model Barquito2("resources/objects/Barco/Barco_speeder.obj");
-	//Model Puerto("resources/objects/Puerto/Prueba2.obj");
+	Model Puerto("resources/objects/Puerto/Prueba2.obj");
 	
 	//Inicialización de KeyFrames
 	for (int i = 0; i < MAX_FRAMES; i++)
@@ -505,7 +558,7 @@ int main()
 		isla.Draw(staticShader);
 
 		//DINOPARQUE
-		/*
+		
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(500.0f, -0.5f, -1170.0f));//Colocando Cerca
 		model = glm::rotate(model, glm::radians(rot1+70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(5.5f));
@@ -756,7 +809,7 @@ int main()
 		model = glm::rotate(model, glm::radians(rot1 - 70), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.4f));
 		staticShader.setMat4("model", model);
-		Puerto.Draw(staticShader);*/
+		Puerto.Draw(staticShader);
 
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(-137.0f, -6.0f, 1280.0f));//Colocando Barquito
 		model = glm::rotate(model, glm::radians(rot1 - 155), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -764,11 +817,11 @@ int main()
 		staticShader.setMat4("model", model);
 		Barquito.Draw(staticShader);
 
-		/*model = glm::translate(glm::mat4(1.0f), glm::vec3(45.0f, -12.0f, 1080.0f));//Colocando Puerto
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(45.0f, -12.0f, 1080.0f));//Colocando Puerto
 		model = glm::rotate(model, glm::radians(rot1 - 50), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.4f));
 		staticShader.setMat4("model", model);
-		Puerto.Draw(staticShader);*/
+		Puerto.Draw(staticShader);
 
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(250.0f, -6.0f, 1160.0f));//Colocando Barquito
 		model = glm::rotate(model, glm::radians(rot1 + 40), glm::vec3(0.0f, 1.0f, 0.0f));

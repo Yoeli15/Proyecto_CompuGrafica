@@ -89,8 +89,6 @@ typedef struct _frame
 	float posX;		//Variable para PosicionX
 	float posY;		//Variable para PosicionY
 	float posZ;		//Variable para PosicionZ
-	float rotRodIzq;
-	float giroMonito;
 
 }FRAME;
 
@@ -434,7 +432,7 @@ int main()
 	// load models
 	// -----------
 	Model isla("resources/objects/Isla/isla.obj");
-
+	Model agua("resources/objects/piso/Piso.obj");
 	Model Banco1("resources/objects/Bancos/Banco1/old_table.obj");
 	Model Banco4("resources/objects/Bancos/Banco4/Banco4.obj");
 	Model Arbol1("resources/objects/Arboles/Arbol1.obj");
@@ -458,14 +456,15 @@ int main()
 	Model Barquito2("resources/objects/Barco/Barco_speeder.obj");
 	Model Puerto("resources/objects/Puerto/Prueba2.obj");
 	
+	ModelAnim Aplauso1("resources/objects/Aplausos/Standing Clap.dae");
+	Aplauso1.initShaders(animShader.ID);
+
 	//Inicialización de KeyFrames
 	for (int i = 0; i < MAX_FRAMES; i++)
 	{
 		KeyFrame[i].posX = 0;
 		KeyFrame[i].posY = 0;
 		KeyFrame[i].posZ = 0;
-		KeyFrame[i].rotRodIzq = 0;
-		KeyFrame[i].giroMonito = 0;
 	}
 
 	while (!glfwWindowShouldClose(window))
@@ -543,7 +542,13 @@ int main()
 		animShader.setVec3("light.direction", lightDirection);
 		animShader.setVec3("viewPos", camera.Position);
 
-		
+		// APLAUSOS1
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(537.5f, 0.0f, -1058.0f)); // translate it down so it's at the center of the scene
+		model = glm::scale(model, glm::vec3(0.15f));	// it's a bit too big for our scene, so scale it down
+		animShader.setMat4("model", model);
+		Aplauso1.Draw(animShader);
+
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Escenario
 		// -------------------------------------------------------------------------------------------------------------------------
@@ -556,6 +561,11 @@ int main()
 		model = glm::scale(model, glm::vec3(20.0f));
 		staticShader.setMat4("model", model);
 		isla.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -52.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(2.0f));
+		staticShader.setMat4("model", model);
+		agua.Draw(staticShader);
 
 		//DINOPARQUE
 		

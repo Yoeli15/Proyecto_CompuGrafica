@@ -1,5 +1,5 @@
 # 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
-# File Created: 04.05.2022 02:12:12
+# File Created: 20.05.2022 21:08:12
 
 newmtl Top
 	Ns 10.0000
@@ -26,8 +26,8 @@ newmtl Top2
 	Kd 0.5880 0.5880 0.5880
 	Ks 0.0000 0.0000 0.0000
 	Ke 0.0000 0.0000 0.0000
-	map_Ka Tierra.tga
-	map_Kd Tierra.tga
+	map_Ka arena2.tga
+	map_Kd arena2.tga
 
 newmtl 02___Default
 	Ns 10.0000

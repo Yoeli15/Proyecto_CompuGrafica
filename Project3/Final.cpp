@@ -385,7 +385,7 @@ int main()
 	//Model piso("resources/objects/piso/piso.obj");
 	
 	Model isla("resources/objects/Isla/isla.obj");
-	
+	/*
 	Model Banco1("resources/objects/Bancos/Banco1/old_table.obj");
 	Model Banco4("resources/objects/Bancos/Banco4/Banco4.obj");
 	Model Arbol1("resources/objects/Arboles/Arbol1.obj");
@@ -419,6 +419,13 @@ int main()
 	Model RaptorBrazoDer("resources/ObjectsRodrigo/Raptor/BrazoDer.obj");
 	Model RaptorPataIzq("resources/ObjectsRodrigo/Raptor/PataIzq.obj");
 	Model RaptorPataDer("resources/ObjectsRodrigo/Raptor/PataDer.obj");
+	*/
+	Model PteroCabeza("resources/ObjectsRodrigo/Ptero/Cabeza.obj");
+	Model PteroMandibula("resources/ObjectsRodrigo/Ptero/Mandibula.obj");
+	Model PteroCuerpo("resources/ObjectsRodrigo/Ptero/Cuerpo.obj");
+	Model PteroAlaIzq("resources/ObjectsRodrigo/Ptero/AlaIzq.obj");
+	Model PteroAlaDer("resources/ObjectsRodrigo/Ptero/AlaDer.obj");
+	Model PteroCola("resources/ObjectsRodrigo/Ptero/Cola.obj");
 	
 	//Model Estatua("resources/objects/DinoParque/Dinosaurio/Stegosaurus.obj");
 	Model Barco("resources/objects/Barco/Barco.obj");
@@ -437,7 +444,7 @@ int main()
 	while (!glfwWindowShouldClose(window))
 	{
 		skyboxShader.setInt("skybox", 0);
-		
+
 		// per-frame time logic
 		// --------------------
 		lastFrame = SDL_GetTicks();
@@ -491,7 +498,7 @@ int main()
 		glm::vec3 lightColor = glm::vec3(0.6f);
 		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
 		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.75f);
-		
+
 
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Personaje Animacion
@@ -500,7 +507,7 @@ int main()
 		animShader.use();
 		animShader.setMat4("projection", projection);
 		animShader.setMat4("view", view);
-	
+
 		animShader.setVec3("material.specular", glm::vec3(0.5f));
 		animShader.setFloat("material.shininess", 32.0f);
 		animShader.setVec3("light.ambient", ambientColor);
@@ -509,7 +516,7 @@ int main()
 		animShader.setVec3("light.direction", lightDirection);
 		animShader.setVec3("viewPos", camera.Position);
 
-		
+
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Escenario
 		// -------------------------------------------------------------------------------------------------------------------------
@@ -524,6 +531,7 @@ int main()
 		isla.Draw(staticShader);
 
 		//DINOPARQUE
+		/*
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(500.0f, -0.5f, -1170.0f));//Colocando Cerca
 		model = glm::rotate(model, glm::radians(rot1+70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(5.5f));
@@ -534,7 +542,7 @@ int main()
 		model = glm::rotate(model, glm::radians(rot1+70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(5.5f));
 
-		
+
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(-150.0f, 0.0f, -100.0f));//Colocando Dinosaurio
 		model = glm::scale(model, glm::vec3(0.5f));
 		staticShader.setMat4("model", model);
@@ -567,7 +575,7 @@ int main()
 		model = glm::scale(model, glm::vec3(0.5f));
 		staticShader.setMat4("model", model);
 		Dinosaurio.Draw(staticShader);
-		
+
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(396.0f, -0.5f, -902.0f));//Colocando Cerca
 		model = glm::rotate(model, glm::radians(rot1+70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(5.5f));
@@ -786,28 +794,29 @@ int main()
 		model = glm::scale(model, glm::vec3(100.0f));
 		staticShader.setMat4("model", model);
 		Barco.Draw(staticShader);
-		
 
+		*/
 		/*----------------------------------------------------------------------------------
 		------------------------------------------------------------------------------------
 		---------CREANDO PISTA DE CARRERAS DE VELOCIRAPTORS---------------------------------
 		------------------------------------------------------------------------------------
 		----------------------------------------------------------------------------------*/
+		/*
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.00f, 0.1f, 10.0f));
 		model = glm::scale(model, glm::vec3(2.0f));
 		staticShader.setMat4("model", model);
 		Curva.Draw(staticShader);
-		
+
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorPistaAngulo]), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::translate(model, glm::vec3(-74.5f+RaptorParam[RaptorPistaRadio], 0.2f, 0.0f));
 		model = glm::scale(model, glm::vec3(7.0f));
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotCuerpoY]),glm::vec3(0.0f,1.0f,0.0f));
-		tmp = model;		
+		tmp = model;
 		staticShader.setMat4("model", model);
 		RaptorCuerpo.Draw(staticShader);
 
 		model = glm::translate(tmp, glm::vec3(0.00f, 1.42f, 0.640f));
-		
+
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotCabezaX]), glm::vec3(1.0f, 0.0f, 0.0f));
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotCabezaY]), glm::vec3(0.0f, 1.0f, 0.0f));
 		staticShader.setMat4("model", model);
@@ -850,23 +859,48 @@ int main()
 		RaptorCola.Draw(staticShader);
 
 		//ZONA RESIDENCIAL
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(850.0f, 0.0f, -800.0f));//Colocando 
-		model = glm::rotate(model, glm::radians(rot1 - 60), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.1f));
-		staticShader.setMat4("model", model);
-		Casa1.Draw(staticShader);
 
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(150.0f, 0.0f, -967.5f));//Colocando 
-		model = glm::rotate(model, glm::radians(rot1 + 60.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.4f));
-		staticShader.setMat4("model", model);
-		CasaF.Draw(staticShader);
+		*/
 
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(650.0f, 0.0f, -300.0f));
-		model = glm::rotate(model, glm::radians(rot1), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.1f));
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(10.0f));
+		model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		tmp = model;
 		staticShader.setMat4("model", model);
-		CasaAzul.Draw(staticShader);
+		PteroCuerpo.Draw(staticShader);
+
+		model = glm::translate(tmp, glm::vec3(0.00f, 2.3f, 0.0f));
+
+		model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		staticShader.setMat4("model", model);
+		PteroCabeza.Draw(staticShader);
+
+		model = glm::translate(model, glm::vec3(0.00f, 0.1f, 0.30f));
+		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f,1.0f,1.5f));
+		staticShader.setMat4("model", model);
+		PteroMandibula.Draw(staticShader);
+
+
+		model = glm::translate(tmp, glm::vec3(0.26f, 2.25f, 0.00f));
+		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f));
+		staticShader.setMat4("model", model);
+		PteroAlaIzq.Draw(staticShader);
+
+		model = glm::translate(tmp, glm::vec3(-0.26f, 2.25f, 0.00f));
+		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f));
+		staticShader.setMat4("model", model);
+		PteroAlaDer.Draw(staticShader);
+
+		model = glm::translate(tmp, glm::vec3(0.0f,0.76f,-0.15f));
+		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f));
+		staticShader.setMat4("model", model);
+		PteroCola.Draw(staticShader);
+
 
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Termina Escenario

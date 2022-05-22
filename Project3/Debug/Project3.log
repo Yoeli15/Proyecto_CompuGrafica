@@ -3,11 +3,11 @@ C:\Users\pecer\OneDrive\Documents\GitHub\Proyecto_CompuGrafica\Project3\include\
 C:\Users\pecer\OneDrive\Documents\GitHub\Proyecto_CompuGrafica\Project3\include\modelAnim.h(104,44): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
 C:\Users\pecer\OneDrive\Documents\GitHub\Proyecto_CompuGrafica\Project3\include\modelAnim.h(520,24): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
 C:\Users\pecer\OneDrive\Documents\GitHub\Proyecto_CompuGrafica\Project3\Final.cpp(190,39): warning C4305: '+=': truncamiento de 'double' a 'float'
-C:\Users\pecer\OneDrive\Documents\GitHub\Proyecto_CompuGrafica\Project3\Final.cpp(1011,11): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\pecer\OneDrive\Documents\GitHub\Proyecto_CompuGrafica\Project3\Final.cpp(1012,11): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\pecer\OneDrive\Documents\GitHub\Proyecto_CompuGrafica\Project3\Final.cpp(1016,16): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\pecer\OneDrive\Documents\GitHub\Proyecto_CompuGrafica\Project3\Final.cpp(1017,16): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\pecer\OneDrive\Documents\GitHub\Proyecto_CompuGrafica\Project3\Final.cpp(1019,10): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\pecer\OneDrive\Documents\GitHub\Proyecto_CompuGrafica\Project3\Final.cpp(1020,10): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
-C:\Users\pecer\OneDrive\Documents\GitHub\Proyecto_CompuGrafica\Project3\Final.cpp(1028,28): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\pecer\OneDrive\Documents\GitHub\Proyecto_CompuGrafica\Project3\Final.cpp(1043,11): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\pecer\OneDrive\Documents\GitHub\Proyecto_CompuGrafica\Project3\Final.cpp(1044,11): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\pecer\OneDrive\Documents\GitHub\Proyecto_CompuGrafica\Project3\Final.cpp(1048,16): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\pecer\OneDrive\Documents\GitHub\Proyecto_CompuGrafica\Project3\Final.cpp(1049,16): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\pecer\OneDrive\Documents\GitHub\Proyecto_CompuGrafica\Project3\Final.cpp(1051,10): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\pecer\OneDrive\Documents\GitHub\Proyecto_CompuGrafica\Project3\Final.cpp(1052,10): warning C4244: '=': conversión de 'double' a 'float'; posible pérdida de datos
+C:\Users\pecer\OneDrive\Documents\GitHub\Proyecto_CompuGrafica\Project3\Final.cpp(1060,28): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
   Project3.vcxproj -> C:\Users\pecer\OneDrive\Documents\GitHub\Proyecto_CompuGrafica\Debug\Project3.exe

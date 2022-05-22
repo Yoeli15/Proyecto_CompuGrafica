@@ -68,17 +68,7 @@ float	movBarco_x = 0.0f,
 		movBarco_z = 0.0f,
 		orienta = 0.0f;//si se cambia el auto va a rotar o cambiar de posición, un ejemplo es ponerle 90.0
 
-//Keyframes (Manipulación y dibujo)
-float	posX = 0.0f,
-		posY = 0.0f,
-		posZ = 0.0f,
 
-		incX = 0.0f,
-		incY = 0.0f,
-		incZ = 0.0f,
-		
-		rot1 = 0.0f,
-		rot2 = -90.0f;
 
 //Este enum sirve para identificar en el arreglo de floats los parámetros del velociraptor;
 enum RaptorParams
@@ -95,9 +85,39 @@ enum RaptorParams
 	RaptorRotColaY,
 	RaptorMaxParams
 };
-float RaptorParam[RaptorMaxParams] = {	0.0f};
+float RaptorParam[RaptorMaxParams] = { 0.0f };
 //Este arreglo sirve para poder alterar los valores de incrementos.
 float RaptorParamInc[RaptorMaxParams] = { 0.0f };
+
+enum PteroParams
+{
+	PteroPosX,
+	PteroPosY,
+	PteroPosZ,
+	PteroRotX,
+	PteroRotY,
+	PteroMandibulaAngulo,
+	PteroCabezaRotX,
+	PteroCabezaRotY,
+	PteroAlaDerRot,
+	PteroAlaIzqRot,
+	PteroMaxParams
+};
+float PteroParam[RaptorMaxParams] = { 0.0f,	300.0f,	0.0f,	90.0f,	63.0f,	0.0f,	0.0f,	0.0f,	0.0f,	0.0f };
+//Este arreglo sirve para poder alterar los valores de incrementos.
+float PteroParamInc[RaptorMaxParams] = { 0.0f };
+float PteroKeyFrames[9][RaptorMaxParams] = {
+	//X		Y		Z		ROTx	ROTY	MAND	CABX	CABY	ADer	AIzq
+	{100.0f,300.0f,	0.0f,	90.0f,	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	0.0f},
+	{100.0f,300.0f,100.0f,	90.0f,	40.0f,	5.0f,	-10.0f,	0.0f,	-40.0f,	40.0f},
+	{0.0f,	300.0f,100.0f,	90.0f,	80.0f,	10.0f,	-20.0f,	0.0f,	40.0f,	-40.0f},
+	{-100.0f,320.0f,100.0f,	90.0f,	120.0f,	20.0f,	-30.0f,	0.0f,	-40.0f,	40.0f},
+	{-100.0f,280.0f,0.0f,	90.0f,	160.0f,	30.0f,	-50.0f,	0.0f,	40.0f,	-40.0f},
+	{-100.0f,240.0f,-100.0f,90.0f,	200.0f,	40.0f,	-60.0f,	0.0f,	-40.0f,	40.0f},
+	{0.0f,	320.0f,-100.0f,	90.0f,	280.0f,	20.0f,	-20.0f,	0.0f,	40.0f,	-40.0f},
+	{100.0f,340.0f,-100.0f,	90.0f,	320.0f,	10.0f,	-10.0f,	0.0f,	-40.0f,	40.0f},
+	{100.0f,300.0f,0.0f,	90.0f,	360.0f,	0.0f,	0.0f,	0.0f,	0.0f,	0.0f},
+};
 #define MAX_FRAMES 9
 int i_max_steps = 60;
 int i_curr_steps = 0;
@@ -118,15 +138,15 @@ FRAME KeyFrame[MAX_FRAMES];
 int FrameIndex = 3;			//introducir datos
 bool play = false;
 int playIndex = 0;
+int playIndexPtero = 0;
+int PteroFrameIndex = 9;
 
 void saveFrame(void)
 {
 	//printf("frameindex %d\n", FrameIndex);
 	std::cout << "Frame Index = " << FrameIndex << std::endl;
 
-	KeyFrame[FrameIndex].posX = posX;
-	KeyFrame[FrameIndex].posY = posY;
-	KeyFrame[FrameIndex].posZ = posZ;
+	
 	for (size_t i = 0; i < RaptorMaxParams; i++)
 	{
 		KeyFrame[FrameIndex].RaptorKFParams[i] = RaptorParam[i];
@@ -138,9 +158,7 @@ void saveFrame(void)
 
 void resetElements(void)
 {
-	posX = KeyFrame[0].posX;
-	posY = KeyFrame[0].posY;
-	posZ = KeyFrame[0].posZ;
+	
 
 	for (size_t i = 2; i < RaptorMaxParams; i++)
 	{
@@ -148,22 +166,37 @@ void resetElements(void)
 
 	}
 }
+void ResetPtero(void)
+{
+	for (size_t i = 0; i < PteroMaxParams; i++)
+	{
+		PteroParam[i] = PteroKeyFrames[0][i];
+	}
+}
 
 void interpolation(void)
 {
-	incX = (KeyFrame[playIndex + 1].posX - KeyFrame[playIndex].posX) / i_max_steps;
+	/*incX = (KeyFrame[playIndex + 1].posX - KeyFrame[playIndex].posX) / i_max_steps;
 	incY = (KeyFrame[playIndex + 1].posY - KeyFrame[playIndex].posY) / i_max_steps;
-	incZ = (KeyFrame[playIndex + 1].posZ - KeyFrame[playIndex].posZ) / i_max_steps;
+	incZ = (KeyFrame[playIndex + 1].posZ - KeyFrame[playIndex].posZ) / i_max_steps;*/
 	for (size_t i = 0; i < RaptorMaxParams; i++)
 	{
 		RaptorParamInc[i] = (KeyFrame[playIndex + 1].RaptorKFParams[i] - KeyFrame[playIndex].RaptorKFParams[i]) / i_max_steps;
 
 	}
+	
+}
+void pteroInter(void)
+{
+	for (size_t i = 0; i < PteroMaxParams; i++)
+	{
+		PteroParamInc[i] = (PteroKeyFrames[playIndexPtero+1][i]- PteroKeyFrames[playIndexPtero][i])/i_max_steps;
+	}
 }
 
 void animate(void)
 {
-	if (play)
+	if (true)
 	{
 		if (i_curr_steps >= i_max_steps) //end of animation between frames?
 		{
@@ -179,24 +212,34 @@ void animate(void)
 			i_curr_steps = 0; //Reset counter
 							  //Interpolation
 			interpolation();
-			
+			playIndexPtero++;
+			if (playIndexPtero > PteroFrameIndex - 2)
+			{
+				playIndexPtero = 0;
+				ResetPtero();
+			}
+			pteroInter();
+
 		}
 		else
 		{
 			//Draw animation
-			posX += incX;
-			posY += incY;
-			posZ += incZ;
+			
 			RaptorParam[RaptorPistaAngulo]+=0.1;
 			for (size_t i = 0; i < RaptorMaxParams; i++)
 			{
 				RaptorParam[i] += RaptorParamInc[i];
 			}
-
+			for (size_t i = 0; i < PteroMaxParams; i++)
+			{
+				PteroParam[i] += PteroParamInc[i];
+			}
 
 			i_curr_steps++;
 		}
 	}
+
+
 
 	//Barco
 	if(animacion){
@@ -408,7 +451,7 @@ int main()
 	
 	
 	Model cubo("resources/objects/cubo.obj");
-	
+	*/
 	Model Silla("resources/objects/Silla/old_table.obj");
 	Model Curva("resources/ObjectsRodrigo/Caminos/Curva.obj");
 	Model RaptorCuerpo("resources/ObjectsRodrigo/Raptor/Cuerpo.obj");
@@ -419,7 +462,7 @@ int main()
 	Model RaptorBrazoDer("resources/ObjectsRodrigo/Raptor/BrazoDer.obj");
 	Model RaptorPataIzq("resources/ObjectsRodrigo/Raptor/PataIzq.obj");
 	Model RaptorPataDer("resources/ObjectsRodrigo/Raptor/PataDer.obj");
-	*/
+	
 	Model PteroCabeza("resources/ObjectsRodrigo/Ptero/Cabeza.obj");
 	Model PteroMandibula("resources/ObjectsRodrigo/Ptero/Mandibula.obj");
 	Model PteroCuerpo("resources/ObjectsRodrigo/Ptero/Cuerpo.obj");
@@ -801,7 +844,7 @@ int main()
 		---------CREANDO PISTA DE CARRERAS DE VELOCIRAPTORS---------------------------------
 		------------------------------------------------------------------------------------
 		----------------------------------------------------------------------------------*/
-		/*
+		
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.00f, 0.1f, 10.0f));
 		model = glm::scale(model, glm::vec3(2.0f));
 		staticShader.setMat4("model", model);
@@ -860,43 +903,42 @@ int main()
 
 		//ZONA RESIDENCIAL
 
-		*/
-
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 0.0f));
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(PteroParam[PteroPosX], PteroParam[PteroPosY], PteroParam[PteroPosZ]));
 		model = glm::scale(model, glm::vec3(10.0f));
-		model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroRotX]), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroRotY]), glm::vec3(0.0f, 0.0f, 1.0f));
 		tmp = model;
 		staticShader.setMat4("model", model);
 		PteroCuerpo.Draw(staticShader);
 
 		model = glm::translate(tmp, glm::vec3(0.00f, 2.3f, 0.0f));
 
-		model = glm::rotate(model, glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
-		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroCabezaRotX]), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroCabezaRotY]), glm::vec3(0.0f, 1.0f, 0.0f));
 		staticShader.setMat4("model", model);
 		PteroCabeza.Draw(staticShader);
 
 		model = glm::translate(model, glm::vec3(0.00f, 0.1f, 0.30f));
-		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroMandibulaAngulo]), glm::vec3(1.0f, 0.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.0f,1.0f,1.5f));
 		staticShader.setMat4("model", model);
 		PteroMandibula.Draw(staticShader);
 
 
 		model = glm::translate(tmp, glm::vec3(0.26f, 2.25f, 0.00f));
-		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroAlaIzqRot]), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.0f));
 		staticShader.setMat4("model", model);
 		PteroAlaIzq.Draw(staticShader);
 
 		model = glm::translate(tmp, glm::vec3(-0.26f, 2.25f, 0.00f));
-		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroAlaDerRot]), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.0f));
 		staticShader.setMat4("model", model);
 		PteroAlaDer.Draw(staticShader);
 
 		model = glm::translate(tmp, glm::vec3(0.0f,0.76f,-0.15f));
-		model = glm::rotate(model, glm::radians(0.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(-30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.0f));
 		staticShader.setMat4("model", model);
 		PteroCola.Draw(staticShader);

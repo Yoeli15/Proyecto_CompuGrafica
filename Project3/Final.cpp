@@ -48,7 +48,7 @@ float MovementSpeed = 0.1f;
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
-
+ 
 // timing
 const int FPS = 60;
 const int LOOP_TIME = 1000 / FPS; // = 16 milisec // 1000 millisec == 1 sec
@@ -66,19 +66,11 @@ int		avanza = 0;
 
 float	movBarco_x = 0.0f,
 		movBarco_z = 0.0f,
-		orienta = 0.0f;//si se cambia el barco va a rotar o cambiar de posición, un ejemplo es ponerle 90.0
-
-//Keyframes (Manipulación y dibujo)
-float	posX = 0.0f,
-		posY = 0.0f,
-		posZ = 0.0f,
-
-		incX = 0.0f,
-		incY = 0.0f,
-		incZ = 0.0f,
-		
+		orienta = 0.0f,
 		rot1 = 0.0f,
-		rot2 = -90.0f;
+		rot2 = -90.0f;//si se cambia el barco va a rotar o cambiar de posición, un ejemplo es ponerle 90.0
+
+
 
 //Este enum sirve para identificar en el arreglo de floats los parámetros del velociraptor;
 enum RaptorParams
@@ -96,9 +88,40 @@ enum RaptorParams
 	RaptorMaxParams
 };
 
-float RaptorParam[RaptorMaxParams] = {	0.0f};
+float RaptorParam[RaptorMaxParams] = { 0.0f };
+
 //Este arreglo sirve para poder alterar los valores de incrementos.
 float RaptorParamInc[RaptorMaxParams] = { 0.0f };
+
+enum PteroParams
+{
+	PteroPosX,
+	PteroPosY,
+	PteroPosZ,
+	PteroRotX,
+	PteroRotY,
+	PteroMandibulaAngulo,
+	PteroCabezaRotX,
+	PteroCabezaRotY,
+	PteroAlaDerRot,
+	PteroAlaIzqRot,
+	PteroMaxParams
+};
+float PteroParam[RaptorMaxParams] = { 0.0f,	300.0f,	0.0f,	90.0f,	63.0f,	0.0f,	0.0f,	0.0f,	0.0f,	0.0f };
+//Este arreglo sirve para poder alterar los valores de incrementos.
+float PteroParamInc[RaptorMaxParams] = { 0.0f };
+float PteroKeyFrames[9][RaptorMaxParams] = {
+	//X		Y		Z		ROTx	ROTY	MAND	CABX	CABY	ADer	AIzq
+	{100.0f,300.0f,	0.0f,	90.0f,	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	0.0f},
+	{100.0f,300.0f,100.0f,	90.0f,	40.0f,	5.0f,	-10.0f,	0.0f,	-40.0f,	40.0f},
+	{0.0f,	300.0f,100.0f,	90.0f,	80.0f,	10.0f,	-20.0f,	0.0f,	40.0f,	-40.0f},
+	{-100.0f,320.0f,100.0f,	90.0f,	120.0f,	20.0f,	-30.0f,	0.0f,	-40.0f,	40.0f},
+	{-100.0f,280.0f,0.0f,	90.0f,	160.0f,	30.0f,	-50.0f,	0.0f,	40.0f,	-40.0f},
+	{-100.0f,240.0f,-100.0f,90.0f,	200.0f,	40.0f,	-60.0f,	0.0f,	-40.0f,	40.0f},
+	{0.0f,	320.0f,-100.0f,	90.0f,	280.0f,	20.0f,	-20.0f,	0.0f,	40.0f,	-40.0f},
+	{100.0f,340.0f,-100.0f,	90.0f,	320.0f,	10.0f,	-10.0f,	0.0f,	-40.0f,	40.0f},
+	{100.0f,300.0f,0.0f,	90.0f,	360.0f,	0.0f,	0.0f,	0.0f,	0.0f,	0.0f},
+};
 #define MAX_FRAMES 9
 int i_max_steps = 60;
 int i_curr_steps = 0;
@@ -115,15 +138,15 @@ FRAME KeyFrame[MAX_FRAMES];
 int FrameIndex = 3;			//introducir datos
 bool play = false;
 int playIndex = 0;
+int playIndexPtero = 0;
+int PteroFrameIndex = 9;
 
 void saveFrame(void)
 {
 	//printf("frameindex %d\n", FrameIndex);
 	std::cout << "Frame Index = " << FrameIndex << std::endl;
 
-	KeyFrame[FrameIndex].posX = posX;
-	KeyFrame[FrameIndex].posY = posY;
-	KeyFrame[FrameIndex].posZ = posZ;
+	
 	for (size_t i = 0; i < RaptorMaxParams; i++)
 	{
 		KeyFrame[FrameIndex].RaptorKFParams[i] = RaptorParam[i];
@@ -136,9 +159,7 @@ void saveFrame(void)
 
 void resetElements(void)
 {
-	posX = KeyFrame[0].posX;
-	posY = KeyFrame[0].posY;
-	posZ = KeyFrame[0].posZ;
+	
 
 	for (size_t i = 2; i < RaptorMaxParams; i++)
 	{
@@ -146,22 +167,37 @@ void resetElements(void)
 
 	}
 }
+void ResetPtero(void)
+{
+	for (size_t i = 0; i < PteroMaxParams; i++)
+	{
+		PteroParam[i] = PteroKeyFrames[0][i];
+	}
+}
 
 void interpolation(void)
 {
-	incX = (KeyFrame[playIndex + 1].posX - KeyFrame[playIndex].posX) / i_max_steps;
+	/*incX = (KeyFrame[playIndex + 1].posX - KeyFrame[playIndex].posX) / i_max_steps;
 	incY = (KeyFrame[playIndex + 1].posY - KeyFrame[playIndex].posY) / i_max_steps;
-	incZ = (KeyFrame[playIndex + 1].posZ - KeyFrame[playIndex].posZ) / i_max_steps;
+	incZ = (KeyFrame[playIndex + 1].posZ - KeyFrame[playIndex].posZ) / i_max_steps;*/
 	for (size_t i = 0; i < RaptorMaxParams; i++)
 	{
 		RaptorParamInc[i] = (KeyFrame[playIndex + 1].RaptorKFParams[i] - KeyFrame[playIndex].RaptorKFParams[i]) / i_max_steps;
 
 	}
+	
+}
+void pteroInter(void)
+{
+	for (size_t i = 0; i < PteroMaxParams; i++)
+	{
+		PteroParamInc[i] = (PteroKeyFrames[playIndexPtero+1][i]- PteroKeyFrames[playIndexPtero][i])/i_max_steps;
+	}
 }
 
 void animate(void)
 {
-	if (play)
+	if (true)
 	{
 		if (i_curr_steps >= i_max_steps) //end of animation between frames?
 		{
@@ -177,20 +213,28 @@ void animate(void)
 			i_curr_steps = 0; //Reset counter
 		  //Interpolation
 			interpolation();
-			
+			playIndexPtero++;
+			if (playIndexPtero > PteroFrameIndex - 2)
+			{
+				playIndexPtero = 0;
+				ResetPtero();
+			}
+			pteroInter();
+
 		}
 		else
 		{
 			//Draw animation
-			posX += incX;
-			posY += incY;
-			posZ += incZ;
+			
 			RaptorParam[RaptorPistaAngulo]+=0.1;
 			for (size_t i = 0; i < RaptorMaxParams; i++)
 			{
 				RaptorParam[i] += RaptorParamInc[i];
 			}
-
+			for (size_t i = 0; i < PteroMaxParams; i++)
+			{
+				PteroParam[i] += PteroParamInc[i];
+			}
 
 			RaptorParam[RaptorPistaAngulo] += 0.1;
 			for (size_t i = 0; i < RaptorMaxParams; i++)
@@ -200,6 +244,8 @@ void animate(void)
 			i_curr_steps++;
 		}
 	}
+
+
 
 	//Barco
 	if(animacion){
@@ -520,7 +566,10 @@ int main()
 	// load models
 	// -----------
 	Model isla("resources/objects/Isla/isla.obj");
+
 	Model agua("resources/objects/piso/Piso.obj");
+
+	
 	Model Banco1("resources/objects/Bancos/Banco1/old_table.obj");
 	Model Banco4("resources/objects/Bancos/Banco4/Banco4.obj");
 	Model Arbol1("resources/objects/Arboles/Arbol1.obj");
@@ -542,12 +591,14 @@ int main()
 	Model Pasamanos("resources/objects/Pasamanos/Prueba.obj");
 	Model SubeBaja("resources/objects/SubeBaja/SubeBaja.obj");
 
+
 	Model Barco("resources/objects/Barco/Barco.obj");
 	Model Barquito("resources/objects/Barco/Barco_scout.obj");
 	Model Barquito2("resources/objects/Barco/Barco_speeder.obj");
 	Model Puerto("resources/objects/Puerto/Prueba2.obj");
 	Model Grada("resources/objects/Gradas/Grada2.obj");
 	//Animación Roy
+	Model cubo("resources/objects/cubo.obj");
 	Model Curva("resources/ObjectsRodrigo/Caminos/Curva.obj");
 	Model RaptorCuerpo("resources/ObjectsRodrigo/Raptor/Cuerpo.obj");
 	Model RaptorCola("resources/ObjectsRodrigo/Raptor/Cola.obj");
@@ -557,7 +608,6 @@ int main()
 	Model RaptorBrazoDer("resources/ObjectsRodrigo/Raptor/BrazoDer.obj");
 	Model RaptorPataIzq("resources/ObjectsRodrigo/Raptor/PataIzq.obj");
 	Model RaptorPataDer("resources/ObjectsRodrigo/Raptor/PataDer.obj");
-
 
 	ModelAnim Aplauso1("resources/objects/Aplausos/1/Standing Clap.dae");
 	Aplauso1.initShaders(animShader.ID);
@@ -572,6 +622,16 @@ int main()
 	ModelAnim Aplauso6("resources/objects/Aplausos/7/Clapping.dae");
 	Aplauso6.initShaders(animShader.ID);
 
+	
+	Model PteroCabeza("resources/ObjectsRodrigo/Ptero/Cabeza.obj");
+	Model PteroMandibula("resources/ObjectsRodrigo/Ptero/Mandibula.obj");
+	Model PteroCuerpo("resources/ObjectsRodrigo/Ptero/Cuerpo.obj");
+	Model PteroAlaIzq("resources/ObjectsRodrigo/Ptero/AlaIzq.obj");
+	Model PteroAlaDer("resources/ObjectsRodrigo/Ptero/AlaDer.obj");
+	Model PteroCola("resources/ObjectsRodrigo/Ptero/Cola.obj");
+	
+	//Model Estatua("resources/objects/DinoParque/Dinosaurio/Stegosaurus.obj");
+	
 	//Inicialización de KeyFrames
 	for (int i = 0; i < MAX_FRAMES; i++)
 	{
@@ -583,7 +643,7 @@ int main()
 	while (!glfwWindowShouldClose(window))
 	{
 		skyboxShader.setInt("skybox", 0);
-		
+
 		// per-frame time logic
 		// --------------------
 		lastFrame = SDL_GetTicks();
@@ -637,7 +697,7 @@ int main()
 		glm::vec3 lightColor = glm::vec3(0.6f);
 		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
 		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.75f);
-		
+
 
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Personaje Animacion
@@ -646,7 +706,7 @@ int main()
 		animShader.use();
 		animShader.setMat4("projection", projection);
 		animShader.setMat4("view", view);
-	
+
 		animShader.setVec3("material.specular", glm::vec3(0.5f));
 		animShader.setFloat("material.shininess", 32.0f);
 		animShader.setVec3("light.ambient", ambientColor);
@@ -691,6 +751,7 @@ int main()
 		model = glm::scale(model, glm::vec3(0.15f));	// it's a bit too big for our scene, so scale it down
 		animShader.setMat4("model", model);
 		Aplauso3.Draw(animShader);
+
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Escenario
 		// -------------------------------------------------------------------------------------------------------------------------
@@ -749,7 +810,7 @@ int main()
 		model = glm::scale(model, glm::vec3(0.5f));
 		staticShader.setMat4("model", model);
 		Dinosaurio.Draw(staticShader);
-		
+
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(396.0f, -0.5f, -902.0f));//Colocando Cerca
 		model = glm::rotate(model, glm::radians(rot1+70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(5.5f));
@@ -992,6 +1053,7 @@ int main()
 		------------------------------------------------------------------------------------
 		----------------------------------------------------------------------------------*/
 		
+
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(-70.0f, -0.7f, -200.0f));//Colocando Lámpara
 		model = glm::scale(model, glm::vec3(5.0f));
 		staticShader.setMat4("model", model);
@@ -1140,7 +1202,48 @@ int main()
 		
 
 		//ZONA RESIDENCIAL
-		
+
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(PteroParam[PteroPosX], PteroParam[PteroPosY], PteroParam[PteroPosZ]));
+		model = glm::scale(model, glm::vec3(10.0f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroRotX]), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroRotY]), glm::vec3(0.0f, 0.0f, 1.0f));
+		tmp = model;
+		staticShader.setMat4("model", model);
+		PteroCuerpo.Draw(staticShader);
+
+		model = glm::translate(tmp, glm::vec3(0.00f, 2.3f, 0.0f));
+
+		model = glm::rotate(model, glm::radians(PteroParam[PteroCabezaRotX]), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroCabezaRotY]), glm::vec3(0.0f, 1.0f, 0.0f));
+		staticShader.setMat4("model", model);
+		PteroCabeza.Draw(staticShader);
+
+		model = glm::translate(model, glm::vec3(0.00f, 0.1f, 0.30f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroMandibulaAngulo]), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f,1.0f,1.5f));
+		staticShader.setMat4("model", model);
+		PteroMandibula.Draw(staticShader);
+
+
+		model = glm::translate(tmp, glm::vec3(0.26f, 2.25f, 0.00f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroAlaIzqRot]), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f));
+		staticShader.setMat4("model", model);
+		PteroAlaIzq.Draw(staticShader);
+
+		model = glm::translate(tmp, glm::vec3(-0.26f, 2.25f, 0.00f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroAlaDerRot]), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f));
+		staticShader.setMat4("model", model);
+		PteroAlaDer.Draw(staticShader);
+
+		model = glm::translate(tmp, glm::vec3(0.0f,0.76f,-0.15f));
+		model = glm::rotate(model, glm::radians(-30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f));
+		staticShader.setMat4("model", model);
+		PteroCola.Draw(staticShader);
+
 
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Termina Escenario

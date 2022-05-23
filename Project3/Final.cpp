@@ -66,7 +66,7 @@ int		avanza = 0;
 
 float	movBarco_x = 0.0f,
 		movBarco_z = 0.0f,
-		orienta = 0.0f;//si se cambia el auto va a rotar o cambiar de posición, un ejemplo es ponerle 90.0
+		orienta = 0.0f;//si se cambia el barco va a rotar o cambiar de posición, un ejemplo es ponerle 90.0
 
 //Keyframes (Manipulación y dibujo)
 float	posX = 0.0f,
@@ -95,6 +95,7 @@ enum RaptorParams
 	RaptorRotColaY,
 	RaptorMaxParams
 };
+
 float RaptorParam[RaptorMaxParams] = {	0.0f};
 //Este arreglo sirve para poder alterar los valores de incrementos.
 float RaptorParamInc[RaptorMaxParams] = { 0.0f };
@@ -107,14 +108,10 @@ typedef struct _frame
 	float posX;		//Variable para PosicionX
 	float posY;		//Variable para PosicionY
 	float posZ;		//Variable para PosicionZ
-	float rotRodIzq;
-	float giroMonito;
 	float RaptorKFParams[RaptorMaxParams];
-
 }FRAME;
 
 FRAME KeyFrame[MAX_FRAMES];
-
 int FrameIndex = 3;			//introducir datos
 bool play = false;
 int playIndex = 0;
@@ -130,6 +127,7 @@ void saveFrame(void)
 	for (size_t i = 0; i < RaptorMaxParams; i++)
 	{
 		KeyFrame[FrameIndex].RaptorKFParams[i] = RaptorParam[i];
+
 		std::cout << " RP[" << i<<"] "<< RaptorParam[i];
 	}
 	std::cout << std::endl;
@@ -177,7 +175,7 @@ void animate(void)
 				//play = false;
 			}
 			i_curr_steps = 0; //Reset counter
-							  //Interpolation
+		  //Interpolation
 			interpolation();
 			
 		}
@@ -194,6 +192,11 @@ void animate(void)
 			}
 
 
+			RaptorParam[RaptorPistaAngulo] += 0.1;
+			for (size_t i = 0; i < RaptorMaxParams; i++)
+			{
+				RaptorParam[i] += RaptorParamInc[i];
+			}
 			i_curr_steps++;
 		}
 	}
@@ -201,54 +204,191 @@ void animate(void)
 	//Barco
 	if(animacion){
 		switch (avanza) {
-			case 0:
-				if (movBarco_z <= 200.0f) {
-					movBarco_z += 3.0f;
-					//printf("%f", movBarco_z);
+			case 0://Salida del puerto
+				if (movBarco_z <= 250.0f) {
+					movBarco_z += 2.0f;
+					movBarco_x += 1.0f;
 				}
 				else
 					avanza = 1;
 				break;
 			case 1:
-				if (movBarco_x <= 900.00f){
-					orienta = 60.0f;
-					movBarco_x += 3.0f;
+				if (movBarco_z < 360.0f) {
+					movBarco_z += 0.2f;
+					orienta += 0.2f;
 				}
 				else
 					avanza = 2;
 				break;
-			case 2:
-				if (movBarco_z >= -2900.0f){
-					orienta = 150.0f;
+			case 2://Superior Izquierda
+				if (movBarco_x <= 900.0f){
+					orienta = 110.0f;
+					movBarco_x += 2.0f;
 					movBarco_z -= 3.0f;
 				}
 				else
 					avanza = 3;
 				break;
-
 			case 3:
-				if (movBarco_x >= -980.0f){
-					orienta = -130.0f;
-					movBarco_x -= 3.0f;
+				if (movBarco_x < 930.0f) {
+					movBarco_x += 0.2f;
+					orienta += 0.2f;
 				}
 				else
 					avanza = 4;
 				break;
-			case 4:
-				if (movBarco_z <= -100.0f) {
-					orienta = 0.0f;
-					movBarco_z += 3.0f;
+
+			case 4://Lateral Izq
+				if (movBarco_z >= -1800.0f){
+					orienta = 150.0f;
+					movBarco_z -= 2.0f;
 				}
 				else
 					avanza = 5;
 				break;
+
 			case 5:
-				if (movBarco_x <= 50) {
-					orienta = 80.0f;
-					movBarco_x += 3.0f;
+				if (movBarco_z >= -1860.0f) {
+					movBarco_z -= 0.2f;
+					orienta -= 0.2f;
 				}
+				else
+					avanza = 6;
 				break;
 
+			case 6:
+				if (movBarco_z >= -2050.0f) {
+					orienta = 90.0f;
+					movBarco_z -= 1.0f;
+					movBarco_x += 2.0f;
+				}
+				else
+					avanza = 7;
+				break;
+
+			case 7:
+				if (movBarco_z >= -2110.0f) {
+					movBarco_z -= 0.2f;
+					orienta += 0.2f;
+				}
+				else
+					avanza = 8;
+				break;
+
+			case 8:
+				if (movBarco_z >= -2900.0f) {
+					orienta = 150.0f;
+					movBarco_z -= 2.0f;
+				}
+				else
+					avanza = 9;
+				break;
+
+			case 9:
+				if (movBarco_z >= -2980.0f) {
+					movBarco_z -= 0.2f;
+					orienta += 0.2f;
+				}
+				else
+					avanza = 10;
+				break;
+
+			case 10://Inferior
+				if (movBarco_x >= -800.0f){
+					orienta = -130.0f;
+					movBarco_x -= 2.0f;
+				}
+				else
+					avanza = 11;
+				break;
+
+			case 11:
+				if (movBarco_x >= -900.0f) {
+					movBarco_x -= 0.2f;
+					orienta += 0.2f;
+				}
+				else
+					avanza = 12;
+				break;
+
+			case 12://Lateral Derecha
+				if (movBarco_z <= -1500.0f) {
+					orienta = -30.0f;
+					movBarco_z += 2.0f;
+				}
+				else
+					avanza = 13;
+				break;
+
+			case 13:
+				if (movBarco_z <= -1460.0f) {
+					movBarco_z += 0.2f;
+					orienta -= 0.2f;
+				}
+				else
+					avanza = 14;
+				break;
+
+			case 14:
+				if (movBarco_z <= -1380.0f) {
+					orienta = -80.0f;
+					movBarco_z += 1.0f;
+					movBarco_x -= 2.0f;
+				}
+				else
+					avanza = 15;
+				break;
+
+			case 15:
+				if (movBarco_z <= -1330.0f) {
+					movBarco_z += 0.2f;
+					orienta += 0.2f;
+				}
+				else
+					avanza = 16;
+				break;
+
+			case 16:
+				if (movBarco_z <= 0.0f) {
+					orienta = -20.0f;
+					movBarco_z += 2.0f;
+				}
+				else
+					avanza = 17;
+				break;
+
+			case 17:
+				if (movBarco_z <= 100.0f) {
+					movBarco_z += 0.2f;
+					orienta += 0.2f;
+				}
+				else
+					avanza = 18;
+				break;
+
+			case 18://Superior Derecha
+				if (movBarco_x <= -70.0f) {
+					orienta = 80.0f;
+					movBarco_x += 2.0f;
+				}
+				else
+					avanza = 19;
+				break;
+			
+			case 19:
+				if (movBarco_x <= 10.0f) {
+					movBarco_x += 0.2f;
+					orienta -= 0.2f;
+				}
+				else
+					avanza = 20;
+				break;
+			
+			case 20://Regresando al puerto
+				if (movBarco_z >= 10.0f) {
+					movBarco_z -= 2.0f;
+				}
+				break;
 			default:
 				break;
 		}
@@ -314,9 +454,6 @@ int main()
 	// glfw: initialize and configure
 	// ------------------------------
 	glfwInit();
-	/*glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);*/
 
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -383,26 +520,34 @@ int main()
 	// load models
 	// -----------
 	Model isla("resources/objects/Isla/isla.obj");
-	
+	Model agua("resources/objects/piso/Piso.obj");
 	Model Banco1("resources/objects/Bancos/Banco1/old_table.obj");
 	Model Banco4("resources/objects/Bancos/Banco4/Banco4.obj");
 	Model Arbol1("resources/objects/Arboles/Arbol1.obj");
 	Model Arbol2("resources/objects/Arboles/Arbol2.obj");
 	Model Cerca("resources/objects/Cerca/Cerca.obj");
 	Model Entrada("resources/objects/Entrada/Entrada.obj");
-	Model Lampara("resources/objects/Lamparas/Lampara.obj");
 	Model Kiosko("resources/objects/Kiosko/Prueba.obj");
 	Model Mesa("resources/objects/Mesa/Mesa.obj");
 	Model Resbaladilla("resources/objects/Resbaladilla/Resbaladilla.obj");
-	Model Dinosaurio("resources/objects/Dinosaurios/Triceratop/TriceratopMejora.obj");
-	Model Helados("resources/objects/CarroHelados/carrito_helado.obj");
+
+	Model Dinosaurio("resources/objects/Dinos/Triceratop/TriceratopMejora.obj");
+	Model Juego("resources/objects/Juego/Teeter03.obj");
+	Model Lampara("resources/objects/Lamparas/Lampara.obj");
+
 	Model Basura("resources/objects/BotesBasura/Basura.obj");
 	Model BasuraIn("resources/objects/BotesBasura/BasuraIn.obj");
-	Model Juego("resources/objects/Juego/Teeter03.obj");
 	Model Maquina("resources/objects/Maquinas/Maquina.obj");
+	Model Helados("resources/objects/CarroHelados/carrito_helado.obj");
 	Model Pasamanos("resources/objects/Pasamanos/Prueba.obj");
 	Model SubeBaja("resources/objects/SubeBaja/SubeBaja.obj");
 
+	Model Barco("resources/objects/Barco/Barco.obj");
+	Model Barquito("resources/objects/Barco/Barco_scout.obj");
+	Model Barquito2("resources/objects/Barco/Barco_speeder.obj");
+	Model Puerto("resources/objects/Puerto/Prueba2.obj");
+	Model Grada("resources/objects/Gradas/Grada2.obj");
+	//Animación Roy
 	Model Curva("resources/ObjectsRodrigo/Caminos/Curva.obj");
 	Model RaptorCuerpo("resources/ObjectsRodrigo/Raptor/Cuerpo.obj");
 	Model RaptorCola("resources/ObjectsRodrigo/Raptor/Cola.obj");
@@ -412,18 +557,27 @@ int main()
 	Model RaptorBrazoDer("resources/ObjectsRodrigo/Raptor/BrazoDer.obj");
 	Model RaptorPataIzq("resources/ObjectsRodrigo/Raptor/PataIzq.obj");
 	Model RaptorPataDer("resources/ObjectsRodrigo/Raptor/PataDer.obj");
-	
-	Model Barco("resources/objects/Barco/Barco.obj");
-	Model Puerto("resources/objects/Puerto/Prueba2.obj");
-	
+
+
+	ModelAnim Aplauso1("resources/objects/Aplausos/1/Standing Clap.dae");
+	Aplauso1.initShaders(animShader.ID);
+	ModelAnim Aplauso2("resources/objects/Aplausos/2/Sitting Clap.dae");
+	Aplauso2.initShaders(animShader.ID);
+	ModelAnim Aplauso3("resources/objects/Aplausos/3/Standing Clap.dae");
+	Aplauso3.initShaders(animShader.ID);
+	ModelAnim Aplauso4("resources/objects/Aplausos/4/Sitting Clap.dae");
+	Aplauso4.initShaders(animShader.ID);
+	ModelAnim Aplauso5("resources/objects/Aplausos/5/Fist Pump.dae");
+	Aplauso5.initShaders(animShader.ID);
+	ModelAnim Aplauso6("resources/objects/Aplausos/7/Clapping.dae");
+	Aplauso6.initShaders(animShader.ID);
+
 	//Inicialización de KeyFrames
 	for (int i = 0; i < MAX_FRAMES; i++)
 	{
 		KeyFrame[i].posX = 0;
 		KeyFrame[i].posY = 0;
 		KeyFrame[i].posZ = 0;
-		KeyFrame[i].rotRodIzq = 0;
-		KeyFrame[i].giroMonito = 0;
 	}
 
 	while (!glfwWindowShouldClose(window))
@@ -501,7 +655,42 @@ int main()
 		animShader.setVec3("light.direction", lightDirection);
 		animShader.setVec3("viewPos", camera.Position);
 
-		
+		// APLAUSOS1
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, 15.7f, 251.0f)); // translate it down so it's at the center of the scene
+		model = glm::rotate(model, glm::radians(rot1 - 150), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.15f));	// it's a bit too big for our scene, so scale it down
+		animShader.setMat4("model", model);
+		Aplauso4.Draw(animShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-50.0f, 1.0f, 218.0f)); // translate it down so it's at the center of the scene
+		model = glm::rotate(model, glm::radians(rot1 + 180), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.07f));	// it's a bit too big for our scene, so scale it down
+		animShader.setMat4("model", model);
+		Aplauso6.Draw(animShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-150.0f, 22.7f, 220.0f)); // translate it down so it's at the center of the scene
+		model = glm::rotate(model, glm::radians(rot1 + 170), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.15f));	// it's a bit too big for our scene, so scale it down
+		animShader.setMat4("model", model);
+		Aplauso2.Draw(animShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 8.0f, -218.0f)); // translate it down so it's at the center of the scene
+		model = glm::scale(model, glm::vec3(0.15f));	// it's a bit too big for our scene, so scale it down
+		animShader.setMat4("model", model);
+		Aplauso1.Draw(animShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(125.0f, 30.0f, -215.0f)); // translate it down so it's at the center of the scene
+		model = glm::rotate(model, glm::radians(rot1 - 10), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.15f));	// it's a bit too big for our scene, so scale it down
+		animShader.setMat4("model", model);
+		Aplauso5.Draw(animShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(175.0f, 0.0f, -115.0f)); // translate it down so it's at the center of the scene
+		model = glm::rotate(model, glm::radians(rot1 - 60), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.15f));	// it's a bit too big for our scene, so scale it down
+		animShader.setMat4("model", model);
+		Aplauso3.Draw(animShader);
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Escenario
 		// -------------------------------------------------------------------------------------------------------------------------
@@ -515,7 +704,14 @@ int main()
 		staticShader.setMat4("model", model);
 		isla.Draw(staticShader);
 
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, -52.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(2.0f));
+		staticShader.setMat4("model", model);
+		agua.Draw(staticShader);
+
 		//DINOPARQUE
+
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(500.0f, -0.5f, -1170.0f));//Colocando Cerca
 		model = glm::rotate(model, glm::radians(rot1+70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(5.5f));
@@ -759,12 +955,18 @@ int main()
 		model = glm::scale(model, glm::vec3(0.5f));
 		staticShader.setMat4("model", model);
 		Helados.Draw(staticShader);
-
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(-83.0f, -12.0f, 1110.0f));//Colocando Puerto
 		model = glm::rotate(model, glm::radians(rot1 - 70), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.4f));
 		staticShader.setMat4("model", model);
 		Puerto.Draw(staticShader);
+
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-137.0f, -6.0f, 1280.0f));//Colocando Barquito
+		model = glm::rotate(model, glm::radians(rot1 - 155), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(25.0f));
+		staticShader.setMat4("model", model);
+		Barquito.Draw(staticShader);
 
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(45.0f, -12.0f, 1080.0f));//Colocando Puerto
 		model = glm::rotate(model, glm::radians(rot1 - 50), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -772,33 +974,130 @@ int main()
 		staticShader.setMat4("model", model);
 		Puerto.Draw(staticShader);
 
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(70.0f+movBarco_x, -30.0f, 1520.0f + movBarco_z));//Colocando Barco
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(250.0f, -6.0f, 1160.0f));//Colocando Barquito
+		model = glm::rotate(model, glm::radians(rot1 + 40), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(25.0f));
+		staticShader.setMat4("model", model);
+		Barquito2.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(70.0f + movBarco_x, -30.0f, 1530.0f + movBarco_z));//Colocando Barco
 		model = glm::rotate(model, glm::radians(rot1 + 20 + orienta), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(80.0f));
 		staticShader.setMat4("model", model);
 		Barco.Draw(staticShader);
-		
 
 		/*----------------------------------------------------------------------------------
 		------------------------------------------------------------------------------------
 		---------CREANDO PISTA DE CARRERAS DE VELOCIRAPTORS---------------------------------
 		------------------------------------------------------------------------------------
 		----------------------------------------------------------------------------------*/
+		
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-70.0f, -0.7f, -200.0f));//Colocando Lámpara
+		model = glm::scale(model, glm::vec3(5.0f));
+		staticShader.setMat4("model", model);
+		Lampara.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -230.0f));//Colocando Gradas Frontales
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(110.0f, 0.0f, -200.0f));
+		model = glm::rotate(model, glm::radians(rot1 - 30), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(200.0f, 0.0f, -120.0f));
+		model = glm::rotate(model, glm::radians(rot1 - 60), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(250.0f, -0.7f, -80.0f));//Colocando Lámpara
+		model = glm::scale(model, glm::vec3(5.0f));
+		staticShader.setMat4("model", model);
+		Lampara.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(250.0f, 0.0f, -20.0f));//Colocando Maquina
+		model = glm::rotate(model, glm::radians(rot1 + 180), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(18.0f));
+		staticShader.setMat4("model", model);
+		Maquina.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(250.0f, -1.0f, 60.0f));//Colocando BasuraIn
+		model = glm::rotate(model, glm::radians(rot1 - 100), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(4.5f));
+		staticShader.setMat4("model", model);
+		BasuraIn.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(250.0f, -1.0f, 100.0f));//Colocando BasuraOrg
+		model = glm::rotate(model, glm::radians(rot1 - 100), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(4.5f));
+		staticShader.setMat4("model", model);
+		Basura.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-270.0f, -0.7f, 40.0f));//Colocando Lámpara
+		model = glm::scale(model, glm::vec3(5.0f));
+		staticShader.setMat4("model", model);
+		Lampara.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-250.0f, 0.0f, 120.0f));//Colocando Gradas Traseras
+		model = glm::rotate(model, glm::radians(rot1 + 120), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-150.0f, 0.0f, 210.0f));
+		model = glm::rotate(model, glm::radians(rot1 + 150), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-40.0f, 0.0f, 250.0f));
+		model = glm::rotate(model, glm::radians(rot1 - 190), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(70.0f, 0.0f, 250.0f));
+		model = glm::rotate(model, glm::radians(rot1 - 170), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(150.0f, 0.0f, 240.0f));//Colocando Maquina
+		model = glm::rotate(model, glm::radians(rot1 + 110), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(18.0f));
+		staticShader.setMat4("model", model);
+		Maquina.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(200.0f, 0.0f, 150.0f));//Colocando Carrito
+		model = glm::rotate(model, glm::radians(rot1 + 150), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.5f));
+		staticShader.setMat4("model", model);
+		Helados.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(190.0f, -0.7f, 220.0f));//Colocando Lámpara
+		model = glm::scale(model, glm::vec3(5.0f));
+		staticShader.setMat4("model", model);
+		Lampara.Draw(staticShader);
+
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.00f, 0.1f, 10.0f));
 		model = glm::scale(model, glm::vec3(2.0f));
 		staticShader.setMat4("model", model);
 		Curva.Draw(staticShader);
-		
+
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorPistaAngulo]), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::translate(model, glm::vec3(-64.5f+RaptorParam[RaptorPistaRadio], 0.2f, 0.0f));
-		model = glm::scale(model, glm::vec3(3.0f));
+		model = glm::translate(model, glm::vec3(-74.5f+RaptorParam[RaptorPistaRadio], 0.2f, 0.0f));
+		model = glm::scale(model, glm::vec3(7.0f));
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotCuerpoY]),glm::vec3(0.0f,1.0f,0.0f));
-		tmp = model;		
+		tmp = model;
 		staticShader.setMat4("model", model);
 		RaptorCuerpo.Draw(staticShader);
 
 		model = glm::translate(tmp, glm::vec3(0.00f, 1.42f, 0.640f));
-		
+
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotCabezaX]), glm::vec3(1.0f, 0.0f, 0.0f));
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotCabezaY]), glm::vec3(0.0f, 1.0f, 0.0f));
 		staticShader.setMat4("model", model);
@@ -833,12 +1132,12 @@ int main()
 		staticShader.setMat4("model", model);
 		RaptorPataDer.Draw(staticShader);
 
-
 		model = glm::translate(tmp, glm::vec3(0.00f, 1.0f, -0.420f));
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotColaX]), glm::vec3(1.0f, 0.0f, 0.0f));
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotColaY]), glm::vec3(0.0f, 1.0f, 0.0f));
 		staticShader.setMat4("model", model);
 		RaptorCola.Draw(staticShader);
+		
 
 		//ZONA RESIDENCIAL
 		
@@ -921,6 +1220,7 @@ void my_input(GLFWwindow *window, int key, int scancode, int action, int mode)
 	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
 		RaptorParam[RaptorRotColaX]--;*/
 
+
 	//To play KeyFrame animation 
 	if (key == GLFW_KEY_P && action == GLFW_PRESS)
 	{
@@ -950,7 +1250,7 @@ void my_input(GLFWwindow *window, int key, int scancode, int action, int mode)
 			saveFrame();
 		}
 	}*/
-	
+
 
 	//Animación Barco
 	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {

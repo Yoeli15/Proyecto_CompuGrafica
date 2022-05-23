@@ -520,23 +520,23 @@ int main()
 	Model Arbol2("resources/objects/Arboles/Arbol2.obj");
 	Model Cerca("resources/objects/Cerca/Cerca.obj");
 	Model Entrada("resources/objects/Entrada/Entrada.obj");
-	Model Lampara("resources/objects/Lamparas/Lampara.obj");
 	Model Kiosko("resources/objects/Kiosko/Prueba.obj");
 	Model Mesa("resources/objects/Mesa/Mesa.obj");
 	Model Resbaladilla("resources/objects/Resbaladilla/Resbaladilla.obj");
 	Model Dinosaurio("resources/objects/Dinos/Triceratop/TriceratopMejora.obj");
-	Model Helados("resources/objects/CarroHelados/carrito_helado.obj");
+	Model Juego("resources/objects/Juego/Teeter03.obj");*/
+	Model Lampara("resources/objects/Lamparas/Lampara.obj");
 	Model Basura("resources/objects/BotesBasura/Basura.obj");
 	Model BasuraIn("resources/objects/BotesBasura/BasuraIn.obj");
-	Model Juego("resources/objects/Juego/Teeter03.obj");
 	Model Maquina("resources/objects/Maquinas/Maquina.obj");
-	Model Pasamanos("resources/objects/Pasamanos/Prueba.obj");
+	Model Helados("resources/objects/CarroHelados/carrito_helado.obj");
+	/*Model Pasamanos("resources/objects/Pasamanos/Prueba.obj");
 	Model SubeBaja("resources/objects/SubeBaja/SubeBaja.obj");
 	Model Barco("resources/objects/Barco/Barco.obj");
 	Model Barquito("resources/objects/Barco/Barco_scout.obj");
 	Model Barquito2("resources/objects/Barco/Barco_speeder.obj");
 	Model Puerto("resources/objects/Puerto/Prueba2.obj");*/
-	Model Grada("resources/objects/Gradas/Grada.obj");
+	Model Grada("resources/objects/Gradas/Grada2.obj");
 	//Animación Roy
 	Model Curva("resources/ObjectsRodrigo/Caminos/Curva.obj");
 	Model RaptorCuerpo("resources/ObjectsRodrigo/Raptor/Cuerpo.obj");
@@ -638,6 +638,12 @@ int main()
 
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(-50.0f, 0.0f, 220.0f)); // translate it down so it's at the center of the scene
 		model = glm::rotate(model, glm::radians(rot1 + 180), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.15f));	// it's a bit too big for our scene, so scale it down
+		animShader.setMat4("model", model);
+		Aplauso1.Draw(animShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 8.0f, -218.0f)); // translate it down so it's at the center of the scene
+		//model = glm::rotate(model, glm::radians(rot1 + 180), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.15f));	// it's a bit too big for our scene, so scale it down
 		animShader.setMat4("model", model);
 		Aplauso1.Draw(animShader);
@@ -944,28 +950,101 @@ int main()
 		------------------------------------------------------------------------------------
 		----------------------------------------------------------------------------------*/
 		
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-70.0f, -0.7f, -200.0f));//Colocando Lámpara
+		model = glm::scale(model, glm::vec3(5.0f));
+		staticShader.setMat4("model", model);
+		Lampara.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -230.0f));//Colocando Gradas Frontales
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(110.0f, 0.0f, -200.0f));
+		model = glm::rotate(model, glm::radians(rot1 - 30), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(200.0f, 0.0f, -120.0f));
+		model = glm::rotate(model, glm::radians(rot1 - 60), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(250.0f, -0.7f, -80.0f));//Colocando Lámpara
+		model = glm::scale(model, glm::vec3(5.0f));
+		staticShader.setMat4("model", model);
+		Lampara.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(250.0f, 0.0f, -20.0f));//Colocando Maquina
+		model = glm::rotate(model, glm::radians(rot1 + 180), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(18.0f));
+		staticShader.setMat4("model", model);
+		Maquina.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(250.0f, -1.0f, 60.0f));//Colocando BasuraIn
+		model = glm::rotate(model, glm::radians(rot1 - 100), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(4.5f));
+		staticShader.setMat4("model", model);
+		BasuraIn.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(250.0f, -1.0f, 100.0f));//Colocando BasuraOrg
+		model = glm::rotate(model, glm::radians(rot1 - 100), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(4.5f));
+		staticShader.setMat4("model", model);
+		Basura.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-270.0f, -0.7f, 40.0f));//Colocando Lámpara
+		model = glm::scale(model, glm::vec3(5.0f));
+		staticShader.setMat4("model", model);
+		Lampara.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-250.0f, 0.0f, 120.0f));//Colocando Gradas Traseras
+		model = glm::rotate(model, glm::radians(rot1 + 120), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-150.0f, 0.0f, 210.0f));
+		model = glm::rotate(model, glm::radians(rot1 + 150), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-40.0f, 0.0f, 250.0f));
+		model = glm::rotate(model, glm::radians(rot1 - 190), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(70.0f, 0.0f, 250.0f));
+		model = glm::rotate(model, glm::radians(rot1 - 170), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(150.0f, 0.0f, 240.0f));//Colocando Maquina
+		model = glm::rotate(model, glm::radians(rot1 + 110), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(18.0f));
+		staticShader.setMat4("model", model);
+		Maquina.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(200.0f, 0.0f, 150.0f));//Colocando Carrito
+		model = glm::rotate(model, glm::radians(rot1 + 150), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.5f));
+		staticShader.setMat4("model", model);
+		Helados.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(190.0f, -0.7f, 220.0f));//Colocando Lámpara
+		model = glm::scale(model, glm::vec3(5.0f));
+		staticShader.setMat4("model", model);
+		Lampara.Draw(staticShader);
+
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.00f, 0.1f, 10.0f));
 		model = glm::scale(model, glm::vec3(2.0f));
 		staticShader.setMat4("model", model);
 		Curva.Draw(staticShader);
-
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 3.0f, -200.0f));//Colocando Grada Frente
-		model = glm::rotate(model, glm::radians(rot1 + 75), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.1f));
-		staticShader.setMat4("model", model);
-		Grada.Draw(staticShader);
-
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(180.0f, 3.0f, 100.0f));//Colocando Grada Lateral
-		model = glm::rotate(model, glm::radians(rot1 - 40), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.1f));
-		staticShader.setMat4("model", model);
-		Grada.Draw(staticShader);
-
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 3.0f, 210.0f));//Colocando Grada Trasera
-		model = glm::rotate(model, glm::radians(rot1 - 100), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::scale(model, glm::vec3(0.1f));
-		staticShader.setMat4("model", model);
-		Grada.Draw(staticShader);
 
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorPistaAngulo]), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::translate(model, glm::vec3(-74.5f+RaptorParam[RaptorPistaRadio], 0.2f, 0.0f));

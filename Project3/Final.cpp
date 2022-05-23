@@ -548,8 +548,18 @@ int main()
 	Model RaptorPataIzq("resources/ObjectsRodrigo/Raptor/PataIzq.obj");
 	Model RaptorPataDer("resources/ObjectsRodrigo/Raptor/PataDer.obj");
 
-	ModelAnim Aplauso1("resources/objects/Aplausos/Standing Clap.dae");
+	ModelAnim Aplauso1("resources/objects/Aplausos/1/Standing Clap.dae");
 	Aplauso1.initShaders(animShader.ID);
+	ModelAnim Aplauso2("resources/objects/Aplausos/2/Sitting Clap.dae");
+	Aplauso2.initShaders(animShader.ID);
+	ModelAnim Aplauso3("resources/objects/Aplausos/3/Standing Clap.dae");
+	Aplauso3.initShaders(animShader.ID);
+	ModelAnim Aplauso4("resources/objects/Aplausos/4/Sitting Clap.dae");
+	Aplauso4.initShaders(animShader.ID);
+	ModelAnim Aplauso5("resources/objects/Aplausos/5/Fist Pump.dae");
+	Aplauso5.initShaders(animShader.ID);
+	ModelAnim Aplauso6("resources/objects/Aplausos/7/Clapping.dae");
+	Aplauso6.initShaders(animShader.ID);
 
 	//Inicialización de KeyFrames
 	for (int i = 0; i < MAX_FRAMES; i++)
@@ -636,18 +646,40 @@ int main()
 
 		// APLAUSOS1
 
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(-50.0f, 0.0f, 220.0f)); // translate it down so it's at the center of the scene
-		model = glm::rotate(model, glm::radians(rot1 + 180), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, 15.7f, 251.0f)); // translate it down so it's at the center of the scene
+		model = glm::rotate(model, glm::radians(rot1 - 150), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.15f));	// it's a bit too big for our scene, so scale it down
 		animShader.setMat4("model", model);
-		Aplauso1.Draw(animShader);
+		Aplauso4.Draw(animShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-50.0f, 1.0f, 218.0f)); // translate it down so it's at the center of the scene
+		model = glm::rotate(model, glm::radians(rot1 + 180), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.07f));	// it's a bit too big for our scene, so scale it down
+		animShader.setMat4("model", model);
+		Aplauso6.Draw(animShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-150.0f, 22.7f, 220.0f)); // translate it down so it's at the center of the scene
+		model = glm::rotate(model, glm::radians(rot1 + 170), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.15f));	// it's a bit too big for our scene, so scale it down
+		animShader.setMat4("model", model);
+		Aplauso2.Draw(animShader);
 
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 8.0f, -218.0f)); // translate it down so it's at the center of the scene
-		//model = glm::rotate(model, glm::radians(rot1 + 180), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.15f));	// it's a bit too big for our scene, so scale it down
 		animShader.setMat4("model", model);
 		Aplauso1.Draw(animShader);
 
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(125.0f, 30.0f, -215.0f)); // translate it down so it's at the center of the scene
+		model = glm::rotate(model, glm::radians(rot1 - 10), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.15f));	// it's a bit too big for our scene, so scale it down
+		animShader.setMat4("model", model);
+		Aplauso5.Draw(animShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(175.0f, 0.0f, -115.0f)); // translate it down so it's at the center of the scene
+		model = glm::rotate(model, glm::radians(rot1 - 60), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.15f));	// it's a bit too big for our scene, so scale it down
+		animShader.setMat4("model", model);
+		Aplauso3.Draw(animShader);
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Escenario
 		// -------------------------------------------------------------------------------------------------------------------------

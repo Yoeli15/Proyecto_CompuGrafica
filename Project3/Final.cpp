@@ -26,7 +26,10 @@
 #include <Skybox.h>
 #include <iostream>
 
-//#pragma comment(lib, "winmm.lib")
+#include <irrKlang.h> //Manejo de sonido y música 2D y 3D
+using namespace irrklang;
+irrklang::ISoundEngine * engine = irrklang::createIrrKlangDevice();
+irrklang::ISound * mainMusic = engine->play2D("audio/DinosaurFlyBy.mp3", true, false, true); //Musica principal
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
@@ -35,7 +38,7 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void my_input(GLFWwindow* window, int key, int scancode, int action, int mods);
 void animate(void);
 
-// settings
+//Configuración del tamaño de la ventana
 unsigned int SCR_WIDTH = 800;
 unsigned int SCR_HEIGHT = 600;
 GLFWmonitor *monitors;
@@ -43,12 +46,12 @@ GLFWmonitor *monitors;
 void getResolution(void);
 
 // camera
-Camera camera(glm::vec3(0.0f, 50.0f, 90.0f));
+Camera camera(glm::vec3(0.0f, 10.0f, 90.0f));
 float MovementSpeed = 0.1f;
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
-
+ 
 // timing
 const int FPS = 60;
 const int LOOP_TIME = 1000 / FPS; // = 16 milisec // 1000 millisec == 1 sec
@@ -60,25 +63,31 @@ glm::vec3 lightPosition(0.0f, 4.0f, -10.0f);
 glm::vec3 lightDirection(0.0f, -1.0f, -1.0f);
 
 //Posiciones
-bool	animacion = false;
+bool	animacion = false,
+	    animacionM = true,
+		animacionT = false,
+		playMain = false; // Variable auxiliar para pausar y reanudar la música de fondo.
 
-int		avanza = 0;
+int		avanza = 0,
+		avanzaT = 0,
+        avanzaM = 0;
 
 float	movBarco_x = 0.0f,
 		movBarco_z = 0.0f,
-		orienta = 0.0f;//si se cambia el auto va a rotar o cambiar de posición, un ejemplo es ponerle 90.0
-
-//Keyframes (Manipulación y dibujo)
-float	posX = 0.0f,
-		posY = 0.0f,
-		posZ = 0.0f,
-
-		incX = 0.0f,
-		incY = 0.0f,
-		incZ = 0.0f,
-		
 		rot1 = 0.0f,
-		rot2 = -90.0f;
+		rot2 = -90.0f,//Si se cambia el barco va a rotar o cambiar de posición, ejemplo 90.0 = 90°.
+		orienta = 0.0f, //Variable auxiliar para indicar las rotaciones del barco.
+
+		movT_x = 0.0f,
+		movT_z = 0.0f,
+		orientaT = 0.0f, //Variable auxiliar para indicar las rotaciones del T-rex.
+
+		movMozart_x = 0.0f,
+		movMozart_z = 0.0f,
+		orientaM = 0.0f; //Variable auxiliar para indicar las rotaciones del Mosasaurus.
+
+int     stopM = 0,
+		stopT = 0;
 
 //Este enum sirve para identificar en el arreglo de floats los parámetros del velociraptor;
 enum RaptorParams
@@ -95,9 +104,42 @@ enum RaptorParams
 	RaptorRotColaY,
 	RaptorMaxParams
 };
-float RaptorParam[RaptorMaxParams] = {	0.0f};
+
+float RaptorParam[RaptorMaxParams] = { 0.0f };
+
 //Este arreglo sirve para poder alterar los valores de incrementos.
 float RaptorParamInc[RaptorMaxParams] = { 0.0f };
+
+enum PteroParams
+{
+	PteroPosX,
+	PteroPosY,
+	PteroPosZ,
+	PteroRotX,
+	PteroRotY,
+	PteroMandibulaAngulo,
+	PteroCabezaRotX,
+	PteroCabezaRotY,
+	PteroAlaDerRot,
+	PteroAlaIzqRot,
+	PteroMaxParams
+};
+
+float PteroParam[RaptorMaxParams] = { 0.0f,	300.0f,	0.0f,	90.0f,	63.0f,	0.0f,	0.0f,	0.0f,	0.0f,	0.0f };
+//Este arreglo sirve para poder alterar los valores de incrementos.
+float PteroParamInc[RaptorMaxParams] = { 0.0f };
+float PteroKeyFrames[9][RaptorMaxParams] = {
+	//X		Y		Z		ROTx	ROTY	MAND	CABX	CABY	ADer	AIzq
+	{100.0f,300.0f,	0.0f,	90.0f,	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	0.0f},
+	{100.0f,300.0f,100.0f,	90.0f,	40.0f,	5.0f,	-10.0f,	0.0f,	-40.0f,	40.0f},
+	{0.0f,	300.0f,100.0f,	90.0f,	80.0f,	10.0f,	-20.0f,	0.0f,	40.0f,	-40.0f},
+	{-100.0f,320.0f,100.0f,	90.0f,	120.0f,	20.0f,	-30.0f,	0.0f,	-40.0f,	40.0f},
+	{-100.0f,280.0f,0.0f,	90.0f,	160.0f,	30.0f,	-50.0f,	0.0f,	40.0f,	-40.0f},
+	{-100.0f,240.0f,-100.0f,90.0f,	200.0f,	40.0f,	-60.0f,	0.0f,	-40.0f,	40.0f},
+	{0.0f,	320.0f,-100.0f,	90.0f,	280.0f,	20.0f,	-20.0f,	0.0f,	40.0f,	-40.0f},
+	{100.0f,340.0f,-100.0f,	90.0f,	320.0f,	10.0f,	-10.0f,	0.0f,	-40.0f,	40.0f},
+	{100.0f,300.0f,0.0f,	90.0f,	360.0f,	0.0f,	0.0f,	0.0f,	0.0f,	0.0f},
+};
 #define MAX_FRAMES 9
 int i_max_steps = 60;
 int i_curr_steps = 0;
@@ -107,30 +149,27 @@ typedef struct _frame
 	float posX;		//Variable para PosicionX
 	float posY;		//Variable para PosicionY
 	float posZ;		//Variable para PosicionZ
-	float rotRodIzq;
-	float giroMonito;
 	float RaptorKFParams[RaptorMaxParams];
-
 }FRAME;
 
 FRAME KeyFrame[MAX_FRAMES];
-
 int FrameIndex = 3;			//introducir datos
 bool play = false;
 int playIndex = 0;
+int playIndexPtero = 0;
+int PteroFrameIndex = 9;
 
 void saveFrame(void)
 {
 	//printf("frameindex %d\n", FrameIndex);
 	std::cout << "Frame Index = " << FrameIndex << std::endl;
 
-	KeyFrame[FrameIndex].posX = posX;
-	KeyFrame[FrameIndex].posY = posY;
-	KeyFrame[FrameIndex].posZ = posZ;
+
 	for (size_t i = 0; i < RaptorMaxParams; i++)
 	{
 		KeyFrame[FrameIndex].RaptorKFParams[i] = RaptorParam[i];
-		std::cout << " RP[" << i<<"] "<< RaptorParam[i];
+
+		std::cout << " RP[" << i << "] " << RaptorParam[i];
 	}
 	std::cout << std::endl;
 	FrameIndex++;
@@ -138,9 +177,7 @@ void saveFrame(void)
 
 void resetElements(void)
 {
-	posX = KeyFrame[0].posX;
-	posY = KeyFrame[0].posY;
-	posZ = KeyFrame[0].posZ;
+
 
 	for (size_t i = 2; i < RaptorMaxParams; i++)
 	{
@@ -148,22 +185,37 @@ void resetElements(void)
 
 	}
 }
+void ResetPtero(void)
+{
+	for (size_t i = 0; i < PteroMaxParams; i++)
+	{
+		PteroParam[i] = PteroKeyFrames[0][i];
+	}
+}
 
 void interpolation(void)
 {
-	incX = (KeyFrame[playIndex + 1].posX - KeyFrame[playIndex].posX) / i_max_steps;
+	/*incX = (KeyFrame[playIndex + 1].posX - KeyFrame[playIndex].posX) / i_max_steps;
 	incY = (KeyFrame[playIndex + 1].posY - KeyFrame[playIndex].posY) / i_max_steps;
-	incZ = (KeyFrame[playIndex + 1].posZ - KeyFrame[playIndex].posZ) / i_max_steps;
+	incZ = (KeyFrame[playIndex + 1].posZ - KeyFrame[playIndex].posZ) / i_max_steps;*/
 	for (size_t i = 0; i < RaptorMaxParams; i++)
 	{
 		RaptorParamInc[i] = (KeyFrame[playIndex + 1].RaptorKFParams[i] - KeyFrame[playIndex].RaptorKFParams[i]) / i_max_steps;
 
 	}
+
+}
+void pteroInter(void)
+{
+	for (size_t i = 0; i < PteroMaxParams; i++)
+	{
+		PteroParamInc[i] = (PteroKeyFrames[playIndexPtero + 1][i] - PteroKeyFrames[playIndexPtero][i]) / i_max_steps;
+	}
 }
 
 void animate(void)
 {
-	if (play)
+	if(true)
 	{
 		if (i_curr_steps >= i_max_steps) //end of animation between frames?
 		{
@@ -177,22 +229,29 @@ void animate(void)
 				//play = false;
 			}
 			i_curr_steps = 0; //Reset counter
-							  //Interpolation
+		  //Interpolation
 			interpolation();
-			
+			playIndexPtero++;
+			if (playIndexPtero > PteroFrameIndex - 2)
+			{
+				playIndexPtero = 0;
+				ResetPtero();
+			}
+			pteroInter();
 		}
 		else
 		{
 			//Draw animation
-			posX += incX;
-			posY += incY;
-			posZ += incZ;
-			RaptorParam[RaptorPistaAngulo]+=0.1;
+
+			RaptorParam[RaptorPistaAngulo] += 0.1;
 			for (size_t i = 0; i < RaptorMaxParams; i++)
 			{
 				RaptorParam[i] += RaptorParamInc[i];
 			}
-
+			for (size_t i = 0; i < PteroMaxParams; i++)
+			{
+				PteroParam[i] += PteroParamInc[i];
+			}
 
 			i_curr_steps++;
 		}
@@ -200,57 +259,344 @@ void animate(void)
 
 	//Barco
 	if(animacion){
-		switch (avanza) {
-			case 0:
-				if (movBarco_z <= 200.0f) {
-					movBarco_z += 3.0f;
-					//printf("%f", movBarco_z);
+		switch (avanza){
+			case 0://Salida del puerto
+				if (movBarco_z <= 250.0f) {
+					movBarco_z += 2.0f;
+					movBarco_x += 1.0f;
 				}
 				else
 					avanza = 1;
 				break;
 			case 1:
-				if (movBarco_x <= 900.00f){
-					orienta = 60.0f;
-					movBarco_x += 3.0f;
+				if (movBarco_z < 360.0f) {
+					movBarco_z += 0.2f;
+					orienta += 0.2f;
 				}
 				else
 					avanza = 2;
 				break;
-			case 2:
-				if (movBarco_z >= -2900.0f){
-					orienta = 150.0f;
+			case 2://Superior Izquierda
+				if (movBarco_x <= 900.0f){
+					orienta = 110.0f;
+					movBarco_x += 2.0f;
 					movBarco_z -= 3.0f;
 				}
 				else
 					avanza = 3;
 				break;
-
 			case 3:
-				if (movBarco_x >= -980.0f){
-					orienta = -130.0f;
-					movBarco_x -= 3.0f;
+				if (movBarco_x < 930.0f) {
+					movBarco_x += 0.2f;
+					orienta += 0.2f;
 				}
 				else
 					avanza = 4;
 				break;
-			case 4:
-				if (movBarco_z <= -100.0f) {
-					orienta = 0.0f;
-					movBarco_z += 3.0f;
+
+			case 4://Lateral Izq
+				if (movBarco_z >= -1800.0f){
+					orienta = 150.0f;
+					movBarco_z -= 2.0f;
 				}
 				else
 					avanza = 5;
 				break;
+
 			case 5:
-				if (movBarco_x <= 50) {
-					orienta = 80.0f;
-					movBarco_x += 3.0f;
+				if (movBarco_z >= -1860.0f) {
+					movBarco_z -= 0.2f;
+					orienta -= 0.2f;
 				}
+				else
+					avanza = 6;
 				break;
 
+			case 6:
+				if (movBarco_z >= -2050.0f) {
+					orienta = 90.0f;
+					movBarco_z -= 1.0f;
+					movBarco_x += 2.0f;
+				}
+				else
+					avanza = 7;
+				break;
+
+			case 7:
+				if (movBarco_z >= -2110.0f) {
+					movBarco_z -= 0.2f;
+					orienta += 0.2f;
+				}
+				else
+					avanza = 8;
+				break;
+
+			case 8:
+				if (movBarco_z >= -2900.0f) {
+					orienta = 150.0f;
+					movBarco_z -= 2.0f;
+				}
+				else
+					avanza = 9;
+				break;
+
+			case 9:
+				if (movBarco_z >= -2980.0f) {
+					movBarco_z -= 0.2f;
+					orienta += 0.2f;
+				}
+				else
+					avanza = 10;
+				break;
+
+			case 10://Inferior
+				if (movBarco_x >= -800.0f){
+					orienta = -130.0f;
+					movBarco_x -= 2.0f;
+				}
+				else
+					avanza = 11;
+				break;
+
+			case 11:
+				if (movBarco_x >= -900.0f) {
+					movBarco_x -= 0.2f;
+					orienta += 0.2f;
+				}
+				else
+					avanza = 12;
+				break;
+
+			case 12://Lateral Derecha
+				if (movBarco_z <= -1500.0f) {
+					orienta = -30.0f;
+					movBarco_z += 2.0f;
+				}
+				else
+					avanza = 13;
+				break;
+
+			case 13:
+				if (movBarco_z <= -1460.0f) {
+					movBarco_z += 0.2f;
+					orienta -= 0.2f;
+				}
+				else
+					avanza = 14;
+				break;
+
+			case 14:
+				if (movBarco_z <= -1380.0f) {
+					orienta = -80.0f;
+					movBarco_z += 1.0f;
+					movBarco_x -= 2.0f;
+				}
+				else
+					avanza = 15;
+				break;
+
+			case 15:
+				if (movBarco_z <= -1330.0f) {
+					movBarco_z += 0.2f;
+					orienta += 0.2f;
+				}
+				else
+					avanza = 16;
+				break;
+
+			case 16:
+				if (movBarco_z <= 0.0f) {
+					orienta = -20.0f;
+					movBarco_z += 2.0f;
+				}
+				else
+					avanza = 17;
+				break;
+
+			case 17:
+				if (movBarco_z <= 100.0f) {
+					movBarco_z += 0.2f;
+					orienta += 0.2f;
+				}
+				else
+					avanza = 18;
+				break;
+
+			case 18://Superior Derecha
+				if (movBarco_x <= -70.0f) {
+					orienta = 80.0f;
+					movBarco_x += 2.0f;
+				}
+				else
+					avanza = 19;
+				break;
+			
+			case 19:
+				if (movBarco_x <= 10.0f) {
+					movBarco_x += 0.2f;
+					orienta -= 0.2f;
+				}
+				else
+					avanza = 20;
+				break;
+			
+			case 20://Regresando al puerto
+				if (movBarco_z >= 10.0f) {
+					movBarco_z -= 2.0f;
+				}
+				break;
 			default:
 				break;
+		}
+	}
+
+	//Mosasaurio
+
+	if (stopM == 1)	
+		avanzaM = 0;
+
+	if (animacionM) {
+		switch (avanzaM) {
+		case 0: //Empieza la animación del Mosasaurus.
+			if (movMozart_x >= -1800.0f)
+			{
+				movMozart_x += -5.0f;
+				if (movMozart_x <= -1600.0f)
+					orientaM += 2.25f;
+			}
+			else
+				avanzaM = 1;
+			stopM = 0;
+			break;
+
+		case 1:
+			if (movMozart_z <= 3700.0f)
+			{
+				movMozart_z += 5.0f;
+				if (movMozart_z >= 3500.0f)
+					orientaM += 2.25f;
+			}
+			else
+				avanzaM = 2;
+			break;
+
+		case 2:
+			if (movMozart_x <= 1400.0f)
+			{
+				movMozart_x += 5.0f;
+				if (movMozart_x >= 1200.0f)
+					orientaM += 2.25f;
+			}
+			else
+				avanzaM = 3;
+			break;
+
+		case 3:
+			if (movMozart_z >= 0.0f)
+			{
+				movMozart_z -= 5.0f;
+				if (movMozart_z <= 200.0f)
+					orientaM += 2.25f;
+			}
+			else
+				avanzaM = 4;
+			orientaM = 0;
+			break;
+
+		case 4:
+			if (movMozart_x <= 0.0f)
+			{
+				avanzaM = 5;
+			}
+			else
+				movMozart_x -= 5.0f;
+			break;
+
+		case 5:
+			animacionM = false;
+			movMozart_x = 0.0f;
+			movMozart_z = 0.0f;
+			orientaM = 0;
+			stopM = 1;
+			break;
+
+		default:
+			break;
+		}
+	}
+
+	if (stopT == 1)
+		avanzaT = 0;
+
+	//T-rex glm::vec3(500.0f + movT_x, 2.9f, -500.0f + movT_z));
+
+	if (animacionT) {
+		switch (avanzaT) {
+		case 0: //Empieza la animación del Tiranosaurio.
+			if (movT_x >= -100.0f)
+			{
+				movT_x += -2.0f;
+				if (movT_x <= 0.0f)
+					orientaT += 4.5f;
+			}
+			else
+				avanzaT = 1;
+				stopM = 0;
+			break;
+
+		case 1:
+			if (movT_z <= 0.0f)
+			{
+				movT_z += 2.0f;
+				if (movT_z >= -100.0f)
+					orientaT += 4.5f;
+			}
+			else
+				avanzaT = 2;
+			break;
+
+		case 2:
+			if (movT_x <= 600.0f)
+			{
+				movT_x += 2.0f;
+				if (movT_x >= 500.0f)
+					orientaT += 4.5f;
+			}
+			else
+				avanzaT = 3;
+			break;
+
+		case 3:
+			if (movT_z >= -500.0f)
+			{
+				movT_z -= 2.0f;
+				if (movT_z <= -400.0f)
+					orientaT += 4.5f;
+			}
+			else
+				avanzaT = 4;
+				orientaT = 0;
+			break;
+
+		case 4:
+			if (movT_x <= 500.0f)
+			{
+				avanzaT = 5;
+			}
+			else
+				movT_x -= 2.0f;
+			break;
+
+		case 5:
+			animacionT = false;
+			movT_x = 0.0f;
+			movT_z = 0.0f;
+			orientaT = 0;
+			stopT = 1;
+			break;
+
+		default:
+			break;
 		}
 	}
 }
@@ -263,9 +609,12 @@ void getResolution()
 	SCR_HEIGHT = (mode->height) - 80;
 }
 
-
 int main()
 {
+	//MUSICA (Volumen)
+	
+	mainMusic->setVolume(0.05);
+
 	KeyFrame[0].RaptorKFParams[0] = 0.0f;
 	KeyFrame[0].RaptorKFParams[1] = 0.0f;
 	KeyFrame[0].RaptorKFParams[2] = -15.0f;
@@ -314,9 +663,6 @@ int main()
 	// glfw: initialize and configure
 	// ------------------------------
 	glfwInit();
-	/*glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);*/
 
 #ifdef __APPLE__
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -328,7 +674,7 @@ int main()
 	monitors = glfwGetPrimaryMonitor();
 	getResolution();
 
-	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "CGeIHC", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Proyecto FInal CGeIHC", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -384,25 +730,39 @@ int main()
 	// -----------
 	Model isla("resources/objects/Isla/islaTrex.obj");
 	Model agua("resources/objects/piso/Piso.obj");
+	Model casino("resources/objects/casino/hotel.obj");
+	Model volcan("resources/objects/Volcan/volcan.obj");
+	
 	Model Banco1("resources/objects/Bancos/Banco1/old_table.obj");
 	Model Banco4("resources/objects/Bancos/Banco4/Banco4.obj");
 	Model Arbol1("resources/objects/Arboles/Arbol1.obj");
 	Model Arbol2("resources/objects/Arboles/Arbol2.obj");
 	Model Cerca("resources/objects/Cerca/Cerca.obj");
 	Model Entrada("resources/objects/Entrada/Entrada.obj");
-	Model Lampara("resources/objects/Lamparas/Lampara.obj");
 	Model Kiosko("resources/objects/Kiosko/Prueba.obj");
 	Model Mesa("resources/objects/Mesa/Mesa.obj");
 	Model Resbaladilla("resources/objects/Resbaladilla/Resbaladilla.obj");
-	Model Dinosaurio("resources/objects/Dinosaurios/Triceratop/TriceratopMejora.obj");
-	Model Helados("resources/objects/CarroHelados/carrito_helado.obj");
+
+	Model Dinosaurio("resources/objects/Dinos/Triceratop/TriceratopMejora.obj");
+	Model Juego("resources/objects/Juego/Teeter03.obj");
+	Model Lampara("resources/objects/Lamparas/Lampara.obj");
+
 	Model Basura("resources/objects/BotesBasura/Basura.obj");
 	Model BasuraIn("resources/objects/BotesBasura/BasuraIn.obj");
-	Model Juego("resources/objects/Juego/Teeter03.obj");
 	Model Maquina("resources/objects/Maquinas/Maquina.obj");
+	Model Helados("resources/objects/CarroHelados/carrito_helado.obj");
 	Model Pasamanos("resources/objects/Pasamanos/Prueba.obj");
 	Model SubeBaja("resources/objects/SubeBaja/SubeBaja.obj");
-
+	
+	Model Barco("resources/objects/Barco/Barco.obj");
+	Model Barquito("resources/objects/Barco/Barco_scout.obj");
+	Model Barquito2("resources/objects/Barco/Barco_speeder.obj");
+	Model Puerto("resources/objects/Puerto/Prueba2.obj");
+	
+	Model Grada("resources/objects/Gradas/Grada2.obj");
+	
+	//Animación Roy
+	Model cubo("resources/objects/cubo.obj");
 	Model Curva("resources/ObjectsRodrigo/Caminos/Curva.obj");
 	Model RaptorCuerpo("resources/ObjectsRodrigo/Raptor/Cuerpo.obj");
 	Model RaptorCola("resources/ObjectsRodrigo/Raptor/Cola.obj");
@@ -412,14 +772,34 @@ int main()
 	Model RaptorBrazoDer("resources/ObjectsRodrigo/Raptor/BrazoDer.obj");
 	Model RaptorPataIzq("resources/ObjectsRodrigo/Raptor/PataIzq.obj");
 	Model RaptorPataDer("resources/ObjectsRodrigo/Raptor/PataDer.obj");
-
-	ModelAnim Aplauso1("resources/objects/Aplausos/Standing Clap.dae");
+	
+	ModelAnim Aplauso1("resources/objects/Aplausos/1/Standing Clap.dae");
 	Aplauso1.initShaders(animShader.ID);
+	ModelAnim Aplauso2("resources/objects/Aplausos/2/Sitting Clap.dae");
+	Aplauso2.initShaders(animShader.ID);
+	ModelAnim Aplauso3("resources/objects/Aplausos/3/Standing Clap.dae");
+	Aplauso3.initShaders(animShader.ID);
+	ModelAnim Aplauso4("resources/objects/Aplausos/4/Sitting Clap.dae");
+	Aplauso4.initShaders(animShader.ID);
+	ModelAnim Aplauso5("resources/objects/Aplausos/5/Fist Pump.dae");
+	Aplauso5.initShaders(animShader.ID);
+	ModelAnim Aplauso6("resources/objects/Aplausos/7/Clapping.dae");
+	Aplauso6.initShaders(animShader.ID);
+	
+	Model PteroCabeza("resources/ObjectsRodrigo/Ptero/Cabeza.obj");
+	Model PteroMandibula("resources/ObjectsRodrigo/Ptero/Mandibula.obj");
+	Model PteroCuerpo("resources/ObjectsRodrigo/Ptero/Cuerpo.obj");
+	Model PteroAlaIzq("resources/ObjectsRodrigo/Ptero/AlaIzq.obj");
+	Model PteroAlaDer("resources/ObjectsRodrigo/Ptero/AlaDer.obj");
+	Model PteroCola("resources/ObjectsRodrigo/Ptero/Cola.obj");
+	
 	ModelAnim trex("resources/objects/Dinos/Trex/TrexAnimation.fbx");
 	trex.initShaders(animShader.ID);
 	
-	Model Barco("resources/objects/Barco/Barco.obj");
-	Model Puerto("resources/objects/Puerto/Prueba2.obj");
+	ModelAnim mozart("resources/objects/Dinos/Mosasaurio/mozart.fbx");
+	mozart.initShaders(animShader.ID); 
+	
+	//Model Estatua("resources/objects/DinoParque/Dinosaurio/Stegosaurus.obj");
 	
 	//Inicialización de KeyFrames
 	for (int i = 0; i < MAX_FRAMES; i++)
@@ -427,14 +807,12 @@ int main()
 		KeyFrame[i].posX = 0;
 		KeyFrame[i].posY = 0;
 		KeyFrame[i].posZ = 0;
-		KeyFrame[i].rotRodIzq = 0;
-		KeyFrame[i].giroMonito = 0;
 	}
 
 	while (!glfwWindowShouldClose(window))
 	{
 		skyboxShader.setInt("skybox", 0);
-		
+
 		// per-frame time logic
 		// --------------------
 		lastFrame = SDL_GetTicks();
@@ -488,7 +866,6 @@ int main()
 		glm::vec3 lightColor = glm::vec3(0.6f);
 		glm::vec3 diffuseColor = lightColor * glm::vec3(0.5f);
 		glm::vec3 ambientColor = diffuseColor * glm::vec3(0.75f);
-		
 
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Personaje Animacion
@@ -497,7 +874,7 @@ int main()
 		animShader.use();
 		animShader.setMat4("projection", projection);
 		animShader.setMat4("view", view);
-	
+
 		animShader.setVec3("material.specular", glm::vec3(0.5f));
 		animShader.setFloat("material.shininess", 32.0f);
 		animShader.setVec3("light.ambient", ambientColor);
@@ -506,19 +883,59 @@ int main()
 		animShader.setVec3("light.direction", lightDirection);
 		animShader.setVec3("viewPos", camera.Position);
 
+		//MOSASAURUS
+		
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(400.0f + movMozart_x, -74.0f, -1800.0f + movMozart_z)); // Posición inicial.
+		model = glm::rotate(model, glm::radians(2.5f), glm::vec3(0.0f, 0.0f, -1.0f));
+		model = glm::rotate(model, glm::radians(orientaM), glm::vec3(0.0f, 1.0f, 0.0f));
+		//model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.15f));
+		animShader.setMat4("model", model);
+		mozart.Draw(animShader);
+		
 		// T-REX vec3(20.0f, 2.5f, 0.0f));
-
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(510.0f, 2.9f, -1060.0f)); // translate it down so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(0.155f));	// it's a bit too big for our scene, so scale it down
+		
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(500.0f + movT_x, 2.9f, -400.0f + movT_z));
+		model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0.0f, -1.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(orientaT), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.155f));  
 		animShader.setMat4("model", model);
 		trex.Draw(animShader);
 
 		// APLAUSOS1
 
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(537.5f, 0.0f, -1058.0f)); // translate it down so it's at the center of the scene
-		model = glm::scale(model, glm::vec3(0.15f));	// it's a bit too big for our scene, so scale it down
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, 15.7f, 251.0f)); 
+		model = glm::rotate(model, glm::radians(rot1 - 150), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.15f));	
 		animShader.setMat4("model", model);
-		Aplauso1.Draw(animShader);
+		//Aplauso4.Draw(animShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-50.0f, 1.0f, 218.0f)); 
+		model = glm::rotate(model, glm::radians(rot1 + 180), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.07f));
+		animShader.setMat4("model", model);
+		//Aplauso6.Draw(animShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-150.0f, 22.7f, 220.0f)); 
+		model = glm::rotate(model, glm::radians(rot1 + 170), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.15f));	
+		//Aplauso2.Draw(animShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 8.0f, -218.0f)); 
+		model = glm::scale(model, glm::vec3(0.15f));
+		animShader.setMat4("model", model);
+		//Aplauso1.Draw(animShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(125.0f, 30.0f, -215.0f)); 
+		model = glm::rotate(model, glm::radians(rot1 - 10), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.15f));	
+		//Aplauso5.Draw(animShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(175.0f, 0.0f, -115.0f)); 
+		model = glm::rotate(model, glm::radians(rot1 - 60), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.15f));	
+		animShader.setMat4("model", model);
+		//Aplauso3.Draw(animShader);
 
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Escenario
@@ -528,7 +945,7 @@ int main()
 		staticShader.setMat4("view", view);
 
 		model = glm::mat4(1.0f);
-		model = glm::translate(model, glm::vec3(0.0f, -62.0f, -100.0f));
+		model = glm::translate(model, glm::vec3(0.0f, 0.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(20.0f));
 		staticShader.setMat4("model", model);
 		isla.Draw(staticShader);
@@ -538,7 +955,19 @@ int main()
 		staticShader.setMat4("model", model);
 		agua.Draw(staticShader);
 
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(200.0f, -22.0f, 700.0f));
+		model = glm::rotate(model, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(2.5f));
+		staticShader.setMat4("model", model);
+		casino.Draw(staticShader);
+		
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(100.0f, -6.0f, -1000.0f)); // -5.6f en Y
+		model = glm::scale(model, glm::vec3(1.8f));
+		staticShader.setMat4("model", model);
+		volcan.Draw(staticShader);
+
 		//DINOPARQUE
+
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(500.0f, -0.5f, -1170.0f));//Colocando Cerca
 		model = glm::rotate(model, glm::radians(rot1+70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(5.5f));
@@ -566,7 +995,7 @@ int main()
 		model = glm::scale(model, glm::vec3(5.0f));
 		staticShader.setMat4("model", model);
 		Lampara.Draw(staticShader);
-
+		
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(410.0f, -0.7f, -1070.0f));//Colocando Lámpara
 		model = glm::scale(model, glm::vec3(5.0f));
 		staticShader.setMat4("model", model);
@@ -577,7 +1006,7 @@ int main()
 		model = glm::scale(model, glm::vec3(0.5f));
 		staticShader.setMat4("model", model);
 		Dinosaurio.Draw(staticShader);
-		
+
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(396.0f, -0.5f, -902.0f));//Colocando Cerca
 		model = glm::rotate(model, glm::radians(rot1+70.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(5.5f));
@@ -778,17 +1207,22 @@ int main()
 		model = glm::scale(model, glm::vec3(0.15f));
 		staticShader.setMat4("model", model);
 		Resbaladilla.Draw(staticShader);
-
+		
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(400.0f, 0.0f, -700.0f));//Colocando Carrito
 		model = glm::scale(model, glm::vec3(0.5f));
 		staticShader.setMat4("model", model);
 		Helados.Draw(staticShader);
-
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(-83.0f, -12.0f, 1110.0f));//Colocando Puerto
 		model = glm::rotate(model, glm::radians(rot1 - 70), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.4f));
 		staticShader.setMat4("model", model);
 		Puerto.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-137.0f, -6.0f, 1280.0f));//Colocando Barquito
+		model = glm::rotate(model, glm::radians(rot1 - 155), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(25.0f));
+		staticShader.setMat4("model", model);
+		Barquito.Draw(staticShader);
 
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(45.0f, -12.0f, 1080.0f));//Colocando Puerto
 		model = glm::rotate(model, glm::radians(rot1 - 50), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -796,33 +1230,130 @@ int main()
 		staticShader.setMat4("model", model);
 		Puerto.Draw(staticShader);
 
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(70.0f+movBarco_x, -30.0f, 1520.0f + movBarco_z));//Colocando Barco
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(250.0f, -6.0f, 1160.0f));//Colocando Barquito
+		model = glm::rotate(model, glm::radians(rot1 + 40), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(25.0f));
+		staticShader.setMat4("model", model);
+		Barquito2.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(70.0f + movBarco_x, -30.0f, 1530.0f + movBarco_z));//Colocando Barco
 		model = glm::rotate(model, glm::radians(rot1 + 20 + orienta), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(80.0f));
 		staticShader.setMat4("model", model);
 		Barco.Draw(staticShader);
 		
-
 		/*----------------------------------------------------------------------------------
 		------------------------------------------------------------------------------------
 		---------CREANDO PISTA DE CARRERAS DE VELOCIRAPTORS---------------------------------
 		------------------------------------------------------------------------------------
 		----------------------------------------------------------------------------------*/
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 9.5f, 10.0f));
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-70.0f, -0.7f, -200.0f));//Colocando Lámpara
+		model = glm::scale(model, glm::vec3(5.0f));
+		staticShader.setMat4("model", model);
+		Lampara.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, -230.0f));//Colocando Gradas Frontales
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(110.0f, 0.0f, -200.0f));
+		model = glm::rotate(model, glm::radians(rot1 - 30), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(200.0f, 0.0f, -120.0f));
+		model = glm::rotate(model, glm::radians(rot1 - 60), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(250.0f, -0.7f, -80.0f));//Colocando Lámpara
+		model = glm::scale(model, glm::vec3(5.0f));
+		staticShader.setMat4("model", model);
+		Lampara.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(250.0f, 0.0f, -20.0f));//Colocando Maquina
+		model = glm::rotate(model, glm::radians(rot1 + 180), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(18.0f));
+		staticShader.setMat4("model", model);
+		Maquina.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(250.0f, -1.0f, 60.0f));//Colocando BasuraIn
+		model = glm::rotate(model, glm::radians(rot1 - 100), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(4.5f));
+		staticShader.setMat4("model", model);
+		BasuraIn.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(250.0f, -1.0f, 100.0f));//Colocando BasuraOrg
+		model = glm::rotate(model, glm::radians(rot1 - 100), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(4.5f));
+		staticShader.setMat4("model", model);
+		Basura.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-270.0f, -0.7f, 40.0f));//Colocando Lámpara
+		model = glm::scale(model, glm::vec3(5.0f));
+		staticShader.setMat4("model", model);
+		Lampara.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-250.0f, 0.0f, 120.0f));//Colocando Gradas Traseras
+		model = glm::rotate(model, glm::radians(rot1 + 120), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-150.0f, 0.0f, 210.0f));
+		model = glm::rotate(model, glm::radians(rot1 + 150), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(-40.0f, 0.0f, 250.0f));
+		model = glm::rotate(model, glm::radians(rot1 - 190), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(70.0f, 0.0f, 250.0f));
+		model = glm::rotate(model, glm::radians(rot1 - 170), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(37.0f));
+		staticShader.setMat4("model", model);
+		Grada.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(150.0f, 0.0f, 240.0f));//Colocando Maquina
+		model = glm::rotate(model, glm::radians(rot1 + 110), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(18.0f));
+		staticShader.setMat4("model", model);
+		Maquina.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(200.0f, 0.0f, 150.0f));//Colocando Carrito
+		model = glm::rotate(model, glm::radians(rot1 + 150), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(0.5f));
+		staticShader.setMat4("model", model);
+		Helados.Draw(staticShader);
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(190.0f, -0.7f, 220.0f));//Colocando Lámpara
+		model = glm::scale(model, glm::vec3(5.0f));
+		staticShader.setMat4("model", model);
+		Lampara.Draw(staticShader);
+		
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(0.00f, 0.1f, 10.0f));
 		model = glm::scale(model, glm::vec3(2.0f));
 		staticShader.setMat4("model", model);
 		Curva.Draw(staticShader);
-		
+
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorPistaAngulo]), glm::vec3(0.0f, 1.0f, 0.0f));
-		model = glm::translate(model, glm::vec3(-64.5f+RaptorParam[RaptorPistaRadio], 0.2f, 0.0f));
-		model = glm::scale(model, glm::vec3(3.0f));
+		model = glm::translate(model, glm::vec3(-74.5f+RaptorParam[RaptorPistaRadio], 0.2f, 0.0f));
+		model = glm::scale(model, glm::vec3(7.0f));
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotCuerpoY]),glm::vec3(0.0f,1.0f,0.0f));
-		tmp = model;		
+		tmp = model;
 		staticShader.setMat4("model", model);
 		RaptorCuerpo.Draw(staticShader);
 
 		model = glm::translate(tmp, glm::vec3(0.00f, 1.42f, 0.640f));
-		
+
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotCabezaX]), glm::vec3(1.0f, 0.0f, 0.0f));
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotCabezaY]), glm::vec3(0.0f, 1.0f, 0.0f));
 		staticShader.setMat4("model", model);
@@ -832,7 +1363,6 @@ int main()
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotMandibula]+30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		staticShader.setMat4("model", model);
 		RaptorMandibula.Draw(staticShader);
-
 
 		model = glm::translate(tmp, glm::vec3(0.050f, 1.0f, 0.50f));
 		model = glm::rotate(model, glm::radians(-RaptorParam[RaptorRotBrazos]), glm::vec3(1.0f, 0.0f, 0.0f));
@@ -857,16 +1387,53 @@ int main()
 		staticShader.setMat4("model", model);
 		RaptorPataDer.Draw(staticShader);
 
-
 		model = glm::translate(tmp, glm::vec3(0.00f, 1.0f, -0.420f));
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotColaX]), glm::vec3(1.0f, 0.0f, 0.0f));
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotColaY]), glm::vec3(0.0f, 1.0f, 0.0f));
 		staticShader.setMat4("model", model);
 		RaptorCola.Draw(staticShader);
-
-		//ZONA RESIDENCIAL
 		
+		//Pterodactilo
 
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(PteroParam[PteroPosX], PteroParam[PteroPosY], PteroParam[PteroPosZ]));
+		model = glm::scale(model, glm::vec3(10.0f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroRotX]), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroRotY]), glm::vec3(0.0f, 0.0f, 1.0f));
+		tmp = model;
+		staticShader.setMat4("model", model);
+		PteroCuerpo.Draw(staticShader);
+
+		model = glm::translate(tmp, glm::vec3(0.00f, 2.3f, 0.0f));
+
+		model = glm::rotate(model, glm::radians(PteroParam[PteroCabezaRotX]), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroCabezaRotY]), glm::vec3(0.0f, 1.0f, 0.0f));
+		staticShader.setMat4("model", model);
+		PteroCabeza.Draw(staticShader);
+
+		model = glm::translate(model, glm::vec3(0.00f, 0.1f, 0.30f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroMandibulaAngulo]), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f,1.0f,1.5f));
+		staticShader.setMat4("model", model);
+		PteroMandibula.Draw(staticShader);
+
+		model = glm::translate(tmp, glm::vec3(0.26f, 2.25f, 0.00f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroAlaIzqRot]), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f));
+		staticShader.setMat4("model", model);
+		PteroAlaIzq.Draw(staticShader);
+
+		model = glm::translate(tmp, glm::vec3(-0.26f, 2.25f, 0.00f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroAlaDerRot]), glm::vec3(0.0f, 1.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f));
+		staticShader.setMat4("model", model);
+		PteroAlaDer.Draw(staticShader);
+
+		model = glm::translate(tmp, glm::vec3(0.0f,0.76f,-0.15f));
+		model = glm::rotate(model, glm::radians(-30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::scale(model, glm::vec3(1.0f));
+		staticShader.setMat4("model", model);
+		PteroCola.Draw(staticShader);
+		
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Termina Escenario
 		// -------------------------------------------------------------------------------------------------------------------------
@@ -904,13 +1471,13 @@ void my_input(GLFWwindow *window, int key, int scancode, int action, int mode)
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		camera.ProcessKeyboard(FORWARD, (float)deltaTime);
+		camera.ProcessKeyboard(FORWARD, (float)deltaTime + 32);
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		camera.ProcessKeyboard(BACKWARD, (float)deltaTime);
+		camera.ProcessKeyboard(BACKWARD, (float)deltaTime + 32);
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		camera.ProcessKeyboard(LEFT, (float)deltaTime);
+		camera.ProcessKeyboard(LEFT, (float)deltaTime + 32);
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		camera.ProcessKeyboard(RIGHT, (float)deltaTime);
+		camera.ProcessKeyboard(RIGHT, (float)deltaTime + 32);
 	//Configuración para hacer los keyframes
 	/*if (glfwGetKey(window, GLFW_KEY_Y) == GLFW_PRESS)
 		RaptorParam[RaptorRotCuerpoY]++;
@@ -974,11 +1541,11 @@ void my_input(GLFWwindow *window, int key, int scancode, int action, int mode)
 			saveFrame();
 		}
 	}*/
-	
+
 
 	//Animación Barco
-	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS) {
-		animacion ^= true;//operación XOR, lo que tenga la variable le pondrá el valor contrario
+	if (key == GLFW_KEY_SPACE && action == GLFW_PRESS){
+		animacion ^= true;
 	}
 
 	if (key == GLFW_KEY_C && action == GLFW_PRESS) {
@@ -988,6 +1555,39 @@ void my_input(GLFWwindow *window, int key, int scancode, int action, int mode)
 		orienta = 0;
 		animacion = false;
 	}
+
+	//Animación Tiranosaurio
+	if (key == GLFW_KEY_T && action == GLFW_PRESS) {
+		animacionT ^= true;
+	}
+
+	if (key == GLFW_KEY_Y && action == GLFW_PRESS) {
+		movT_x = 0.0f;
+		movT_z = 0.0f;
+		avanzaT = 0;
+		orientaT = 0;
+		animacionT = false;
+	}
+
+	//Animación Mosasaurus
+	if (key == GLFW_KEY_M && action == GLFW_PRESS) {
+		animacionM ^= true;
+	}
+
+	if (key == GLFW_KEY_N && action == GLFW_PRESS) {
+		movMozart_x = 0.0f;
+		movMozart_z = 0.0f;
+		avanzaM = 0;
+		orientaM = 0;
+		animacionM = false;
+	}
+	
+	//MUSICA (Controles)
+	
+	mainMusic->setIsPaused(playMain);
+	
+	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS)
+		playMain ^= true;
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
@@ -1018,8 +1618,9 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 	camera.ProcessMouseMovement(xoffset, yoffset);
 }
-// glfw: whenever the mouse scroll wheel scrolls, this callback is called
-// ----------------------------------------------------------------------
+/*Función que utiliza la biblioteca glfw para controlar el "zoom" de la ventana con el botón medio del
+ratón*/
+
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.ProcessMouseScroll(yoffset);

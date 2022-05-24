@@ -280,7 +280,7 @@ void animate(void)
 				break;
 
 			case 4://Lateral Izq
-				if (movBarco_z >= -1800.0f){
+				if (movBarco_z >= -1700.0f){
 					orienta = 150.0f;
 					movBarco_z -= 2.0f;
 				}
@@ -289,7 +289,7 @@ void animate(void)
 				break;
 
 			case 5:
-				if (movBarco_z >= -1860.0f) {
+				if (movBarco_z >= -1760.0f) {
 					movBarco_z -= 0.2f;
 					orienta -= 0.2f;
 				}
@@ -298,7 +298,7 @@ void animate(void)
 				break;
 
 			case 6:
-				if (movBarco_z >= -2050.0f) {
+				if (movBarco_z >= -1950.0f) {
 					orienta = 90.0f;
 					movBarco_z -= 1.0f;
 					movBarco_x += 2.0f;
@@ -308,7 +308,7 @@ void animate(void)
 				break;
 
 			case 7:
-				if (movBarco_z >= -2110.0f) {
+				if (movBarco_z >= -2010.0f) {
 					movBarco_z -= 0.2f;
 					orienta += 0.2f;
 				}
@@ -317,7 +317,7 @@ void animate(void)
 				break;
 
 			case 8:
-				if (movBarco_z >= -2900.0f) {
+				if (movBarco_z >= -3000.0f) {
 					orienta = 150.0f;
 					movBarco_z -= 2.0f;
 				}
@@ -326,7 +326,7 @@ void animate(void)
 				break;
 
 			case 9:
-				if (movBarco_z >= -2980.0f) {
+				if (movBarco_z >= -3080.0f) {
 					movBarco_z -= 0.2f;
 					orienta += 0.2f;
 				}
@@ -353,7 +353,7 @@ void animate(void)
 				break;
 
 			case 12://Lateral Derecha
-				if (movBarco_z <= -1500.0f) {
+				if (movBarco_z <= -1800.0f) {
 					orienta = -30.0f;
 					movBarco_z += 2.0f;
 				}
@@ -362,7 +362,7 @@ void animate(void)
 				break;
 
 			case 13:
-				if (movBarco_z <= -1460.0f) {
+				if (movBarco_z <= -1760.0f) {
 					movBarco_z += 0.2f;
 					orienta -= 0.2f;
 				}
@@ -371,7 +371,7 @@ void animate(void)
 				break;
 
 			case 14:
-				if (movBarco_z <= -1380.0f) {
+				if (movBarco_z <= -1680.0f) {
 					orienta = -80.0f;
 					movBarco_z += 1.0f;
 					movBarco_x -= 2.0f;
@@ -381,7 +381,7 @@ void animate(void)
 				break;
 
 			case 15:
-				if (movBarco_z <= -1330.0f) {
+				if (movBarco_z <= -1630.0f) {
 					movBarco_z += 0.2f;
 					orienta += 0.2f;
 				}
@@ -565,7 +565,7 @@ int main()
 	Model agua("resources/objects/piso/Piso.obj");
 
 	
-	Model Banco1("resources/objects/Bancos/Banco1/old_table.obj");
+	/*Model Banco1("resources/objects/Bancos/Banco1/old_table.obj");
 	Model Banco4("resources/objects/Bancos/Banco4/Banco4.obj");
 	Model Arbol1("resources/objects/Arboles/Arbol1.obj");
 	Model Arbol2("resources/objects/Arboles/Arbol2.obj");
@@ -585,12 +585,12 @@ int main()
 	Model Helados("resources/objects/CarroHelados/carrito_helado.obj");
 	Model Pasamanos("resources/objects/Pasamanos/Prueba.obj");
 	Model SubeBaja("resources/objects/SubeBaja/SubeBaja.obj");
-
+	*/
 
 	Model Barco("resources/objects/Barco/Barco.obj");
 	Model Barquito("resources/objects/Barco/Barco_scout.obj");
 	Model Barquito2("resources/objects/Barco/Barco_speeder.obj");
-	Model Puerto("resources/objects/Puerto/Prueba2.obj");
+	/*Model Puerto("resources/objects/Puerto/Prueba2.obj");
 	Model Grada("resources/objects/Gradas/Grada2.obj");
 	//Animación Roy
 	Model cubo("resources/objects/cubo.obj");
@@ -625,9 +625,7 @@ int main()
 	Model PteroCuerpo("resources/ObjectsRodrigo/Ptero/Cuerpo.obj");
 	Model PteroAlaIzq("resources/ObjectsRodrigo/Ptero/AlaIzq.obj");
 	Model PteroAlaDer("resources/ObjectsRodrigo/Ptero/AlaDer.obj");
-	Model PteroCola("resources/ObjectsRodrigo/Ptero/Cola.obj");
-	
-	//Model Estatua("resources/objects/DinoParque/Dinosaurio/Stegosaurus.obj");
+	Model PteroCola("resources/ObjectsRodrigo/Ptero/Cola.obj");*/
 	
 	//Inicialización de KeyFrames
 	for (int i = 0; i < MAX_FRAMES; i++)
@@ -714,7 +712,7 @@ int main()
 
 
 		// T-REX vec3(20.0f, 2.5f, 0.0f));
-
+		/*
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(510.0f, 2.9f, -1060.0f)); // translate it down so it's at the center of the scene
 		model = glm::scale(model, glm::vec3(0.155f));	// it's a bit too big for our scene, so scale it down
 		animShader.setMat4("model", model);
@@ -755,7 +753,7 @@ int main()
 		model = glm::rotate(model, glm::radians(rot1 - 60), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(0.15f));	// it's a bit too big for our scene, so scale it down
 		animShader.setMat4("model", model);
-		Aplauso3.Draw(animShader);
+		Aplauso3.Draw(animShader);*/
 
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Escenario
@@ -775,7 +773,7 @@ int main()
 		model = glm::scale(model, glm::vec3(2.0f));
 		staticShader.setMat4("model", model);
 		agua.Draw(staticShader);
-
+		/*
 		//DINOPARQUE
 
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(500.0f, -0.5f, -1170.0f));//Colocando Cerca
@@ -1021,12 +1019,15 @@ int main()
 		model = glm::scale(model, glm::vec3(0.5f));
 		staticShader.setMat4("model", model);
 		Helados.Draw(staticShader);
+
+		//PUERTO
+
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(-83.0f, -12.0f, 1110.0f));//Colocando Puerto
 		model = glm::rotate(model, glm::radians(rot1 - 70), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.4f));
 		staticShader.setMat4("model", model);
 		Puerto.Draw(staticShader);
-
+		*/
 
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(-137.0f, -6.0f, 1280.0f));//Colocando Barquito
 		model = glm::rotate(model, glm::radians(rot1 - 155), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -1034,11 +1035,11 @@ int main()
 		staticShader.setMat4("model", model);
 		Barquito.Draw(staticShader);
 
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(45.0f, -12.0f, 1080.0f));//Colocando Puerto
+		/*model = glm::translate(glm::mat4(1.0f), glm::vec3(45.0f, -12.0f, 1080.0f));//Colocando Puerto
 		model = glm::rotate(model, glm::radians(rot1 - 50), glm::vec3(0.0f, 1.0f, 0.0f));
 		model = glm::scale(model, glm::vec3(1.4f));
 		staticShader.setMat4("model", model);
-		Puerto.Draw(staticShader);
+		Puerto.Draw(staticShader);*/
 
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(250.0f, -6.0f, 1160.0f));//Colocando Barquito
 		model = glm::rotate(model, glm::radians(rot1 + 40), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -1059,7 +1060,7 @@ int main()
 		----------------------------------------------------------------------------------*/
 		
 
-		model = glm::translate(glm::mat4(1.0f), glm::vec3(-70.0f, -0.7f, -200.0f));//Colocando Lámpara
+		/*model = glm::translate(glm::mat4(1.0f), glm::vec3(-70.0f, -0.7f, -200.0f));//Colocando Lámpara
 		model = glm::scale(model, glm::vec3(5.0f));
 		staticShader.setMat4("model", model);
 		Lampara.Draw(staticShader);
@@ -1248,7 +1249,7 @@ int main()
 		model = glm::scale(model, glm::vec3(1.0f));
 		staticShader.setMat4("model", model);
 		PteroCola.Draw(staticShader);
-
+		*/
 
 		// -------------------------------------------------------------------------------------------------------------------------
 		// Termina Escenario

@@ -1,4 +1,4 @@
-﻿/*---------------------------------------------------------*/
+/*---------------------------------------------------------*/
 /* ----------------  Proyecto Final -----------------------*/
 /*-----------------    2022-2   ---------------------------*/
 
@@ -236,11 +236,6 @@ void animate(void)
 				PteroParam[i] += PteroParamInc[i];
 			}
 
-			RaptorParam[RaptorPistaAngulo] += 0.1;
-			for (size_t i = 0; i < RaptorMaxParams; i++)
-			{
-				RaptorParam[i] += RaptorParamInc[i];
-			}
 			i_curr_steps++;
 		}
 	}
@@ -621,6 +616,8 @@ int main()
 	Aplauso5.initShaders(animShader.ID);
 	ModelAnim Aplauso6("resources/objects/Aplausos/7/Clapping.dae");
 	Aplauso6.initShaders(animShader.ID);
+	ModelAnim trex("resources/objects/Dinos/Trex/TrexAnimation.fbx");
+	trex.initShaders(animShader.ID);
 
 	
 	Model PteroCabeza("resources/ObjectsRodrigo/Ptero/Cabeza.obj");
@@ -715,7 +712,15 @@ int main()
 		animShader.setVec3("light.direction", lightDirection);
 		animShader.setVec3("viewPos", camera.Position);
 
+
+		// T-REX vec3(20.0f, 2.5f, 0.0f));
+
+		model = glm::translate(glm::mat4(1.0f), glm::vec3(510.0f, 2.9f, -1060.0f)); // translate it down so it's at the center of the scene
+		model = glm::scale(model, glm::vec3(0.155f));	// it's a bit too big for our scene, so scale it down
+		animShader.setMat4("model", model);
+		trex.Draw(animShader);
 		// APLAUSOS1
+		
 
 		model = glm::translate(glm::mat4(1.0f), glm::vec3(50.0f, 15.7f, 251.0f)); // translate it down so it's at the center of the scene
 		model = glm::rotate(model, glm::radians(rot1 - 150), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -1402,4 +1407,3 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.ProcessMouseScroll(yoffset);
-}

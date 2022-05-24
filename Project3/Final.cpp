@@ -107,7 +107,7 @@ enum PteroParams
 	PteroAlaIzqRot,
 	PteroMaxParams
 };
-float PteroParam[RaptorMaxParams] = { 0.0f,	300.0f,	0.0f,	90.0f,	63.0f,	0.0f,	0.0f,	0.0f,	0.0f,	0.0f };
+float PteroParam[RaptorMaxParams] = { 100.0f,300.0f,	0.0f,	90.0f,	0.0f,	0.0f,	0.0f,	0.0f,	0.0f,	0.0f };
 //Este arreglo sirve para poder alterar los valores de incrementos.
 float PteroParamInc[RaptorMaxParams] = { 0.0f };
 float PteroKeyFrames[9][RaptorMaxParams] = {
@@ -560,7 +560,7 @@ int main()
 
 	// load models
 	// -----------
-	Model isla("resources/objects/Isla/isla.obj");
+	Model isla("resources/objects/Isla/islaTrex.obj");
 
 	Model agua("resources/objects/piso/Piso.obj");
 
@@ -1173,7 +1173,7 @@ int main()
 		model = glm::translate(model, glm::vec3(0.00f, 00.0f,0.190f ));
 		model = glm::rotate(model, glm::radians(RaptorParam[RaptorRotMandibula]+30.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		staticShader.setMat4("model", model);
-		RaptorMandibula.Draw(staticShader);
+		RaptorMandibula.Draw(staticShader); 
 
 
 		model = glm::translate(tmp, glm::vec3(0.050f, 1.0f, 0.50f));
@@ -1219,7 +1219,7 @@ int main()
 
 		model = glm::translate(tmp, glm::vec3(0.00f, 2.3f, 0.0f));
 
-		model = glm::rotate(model, glm::radians(PteroParam[PteroCabezaRotX]), glm::vec3(1.0f, 0.0f, 0.0f));
+		model = glm::rotate(model, glm::radians(PteroParam[PteroCabezaRotX]-90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 		model = glm::rotate(model, glm::radians(PteroParam[PteroCabezaRotY]), glm::vec3(0.0f, 1.0f, 0.0f));
 		staticShader.setMat4("model", model);
 		PteroCabeza.Draw(staticShader);
@@ -1407,3 +1407,4 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.ProcessMouseScroll(yoffset);
+}
